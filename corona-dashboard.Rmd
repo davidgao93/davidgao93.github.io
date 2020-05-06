@@ -387,7 +387,7 @@ plotly::plot_ly(data = df_daily) %>%
 About
 =======================================================================
 
-**The Coronavirus Dashboard: the case of USA**
+**The Coronavirus Dashboard - USA**
 
 This dashboard is built with R using the R Markdown framework. It's hosted on Github.io with DNS Routing on AWS Route53.
 
