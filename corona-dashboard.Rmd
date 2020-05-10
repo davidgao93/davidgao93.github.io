@@ -16,8 +16,6 @@ library(flexdashboard)
 # devtools::install_github("RamiKrispin/coronavirus", force = TRUE)
 library(coronavirus)
 data(coronavirus)
-library(covid19.analytics)
-# view(covid19.US.data())
 # View(coronavirus)
 # max(coronavirus$date)
 
@@ -220,128 +218,188 @@ plotly::plot_ly(data = df_daily,
   )
 ```
 
-<!-- Austin & Virginia -->
-<!-- ======================================================================= -->
+Comparison
+=======================================================================
 
 
-<!-- Column {data-width=400} -->
-<!-- ------------------------------------- -->
+Column {data-width=400}
+-------------------------------------
 
-<!-- ```{r} -->
-<!-- tots.per.location(covid19.US.data(), "Virginia") -->
-<!-- tots.per.location(covid19.US.data(), "Texas") -->
-<!-- ``` -->
+
+### **Daily new cases**
+    
+```{r}
+daily_confirmed <- coronavirus %>%
+  dplyr::filter(type == "confirmed") %>%
+  dplyr::filter(date >= "2020-02-29") %>%
+  dplyr::mutate(country = Country.Region) %>%
+  dplyr::group_by(date, country) %>%
+  dplyr::summarise(total = sum(cases)) %>%
+  dplyr::ungroup() %>%
+  tidyr::pivot_wider(names_from = country, values_from = total)
+
+#----------------------------------------
+# Plotting the data
+
+daily_confirmed %>%
+  plotly::plot_ly() %>%
+  plotly::add_trace(
+    x = ~date,
+    y = ~US,
+    type = "scatter",
+    mode = "lines+markers",
+    name = "US"
+  ) %>%
+  plotly::add_trace(
+    x = ~date,
+    y = ~Japan,
+    type = "scatter",
+    mode = "lines+markers",
+    name = "Japan"
+  ) %>%
+  plotly::add_trace(
+    x = ~date,
+    y = ~Canada,
+    type = "scatter",
+    mode = "lines+markers",
+    name = "Canada"
+  ) %>%
+  plotly::add_trace(
+    x = ~date,
+    y = ~Italy,
+    type = "scatter",
+    mode = "lines+markers",
+    name = "Italy"
+  ) %>%
+  plotly::layout(
+    title = "",
+    legend = list(x = 0.1, y = 0.9),
+    yaxis = list(title = "Number of new cases"),
+    xaxis = list(title = "Date"),
+    # paper_bgcolor = "black",
+    # plot_bgcolor = "black",
+    # font = list(color = 'white'),
+    hovermode = "compare",
+    margin = list(
+      # l = 60,
+      # r = 40,
+      b = 10,
+      t = 10,
+      pad = 2
+    )
+  )
+```
  
-<!-- ### **Cases distribution by type** -->
+### **Cases distribution by type**
 
-<!-- ```{r daily_summary} -->
-<!-- df_EU <- coronavirus %>% -->
-<!--   # dplyr::filter(date == max(date)) %>% -->
-<!--   dplyr::filter(Country.Region == "Belgium" | -->
-<!--     Country.Region == "France" | -->
-<!--     Country.Region == "Italy" | -->
-<!--     Country.Region == "Spain") %>% -->
-<!--   dplyr::group_by(Country.Region, type) %>% -->
-<!--   dplyr::summarise(total = sum(cases)) %>% -->
-<!--   tidyr::pivot_wider( -->
-<!--     names_from = type, -->
-<!--     values_from = total -->
-<!--   ) %>% -->
-<!--   # dplyr::mutate(unrecovered = confirmed - ifelse(is.na(recovered), 0, recovered) - ifelse(is.na(death), 0, death)) %>% -->
-<!--   dplyr::mutate(unrecovered = confirmed - ifelse(is.na(death), 0, death)) %>% -->
-<!--   dplyr::arrange(confirmed) %>% -->
-<!--   dplyr::ungroup() %>% -->
-<!--   dplyr::mutate(country = dplyr::if_else(Country.Region == "United Arab Emirates", "UAE", Country.Region)) %>% -->
-<!--   dplyr::mutate(country = dplyr::if_else(country == "Mainland China", "China", country)) %>% -->
-<!--   dplyr::mutate(country = dplyr::if_else(country == "North Macedonia", "N.Macedonia", country)) %>% -->
-<!--   dplyr::mutate(country = trimws(country)) %>% -->
-<!--   dplyr::mutate(country = factor(country, levels = country)) -->
+```{r daily_summary}
+df_EU <- coronavirus %>%
+  # dplyr::filter(date == max(date)) %>%
+  dplyr::filter(Country.Region == "US" |
+    Country.Region == "Japan" |
+    Country.Region == "Italy" |
+    Country.Region == "Canada") %>%
+  dplyr::group_by(Country.Region, type) %>%
+  dplyr::summarise(total = sum(cases)) %>%
+  tidyr::pivot_wider(
+    names_from = type,
+    values_from = total
+  ) %>%
+  # dplyr::mutate(unrecovered = confirmed - ifelse(is.na(recovered), 0, recovered) - ifelse(is.na(death), 0, death)) %>%
+  dplyr::mutate(unrecovered = confirmed - ifelse(is.na(death), 0, death)) %>%
+  dplyr::arrange(confirmed) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(country = dplyr::if_else(Country.Region == "United Arab Emirates", "UAE", Country.Region)) %>%
+  dplyr::mutate(country = dplyr::if_else(country == "Mainland China", "China", country)) %>%
+  dplyr::mutate(country = dplyr::if_else(country == "North Macedonia", "N.Macedonia", country)) %>%
+  dplyr::mutate(country = trimws(country)) %>%
+  dplyr::mutate(country = factor(country, levels = country))
 
-<!-- plotly::plot_ly( -->
-<!--   data = df_EU, -->
-<!--   x = ~country, -->
-<!--   # y = ~unrecovered, -->
-<!--   y = ~ confirmed, -->
-<!--   # text =  ~ confirmed, -->
-<!--   # textposition = 'auto', -->
-<!--   type = "bar", -->
-<!--   name = "Confirmed", -->
-<!--   marker = list(color = active_color) -->
-<!-- ) %>% -->
-<!--   plotly::add_trace( -->
-<!--     y = ~death, -->
-<!--     # text =  ~ death, -->
-<!--     # textposition = 'auto', -->
-<!--     name = "Death", -->
-<!--     marker = list(color = death_color) -->
-<!--   ) %>% -->
-<!--   plotly::layout( -->
-<!--     barmode = "stack", -->
-<!--     yaxis = list(title = "Total cases"), -->
-<!--     xaxis = list(title = ""), -->
-<!--     hovermode = "compare", -->
-<!--     margin = list( -->
-<!--       # l = 60, -->
-<!--       # r = 40, -->
-<!--       b = 10, -->
-<!--       t = 10, -->
-<!--       pad = 2 -->
-<!--     ) -->
-<!--   ) -->
-<!-- ``` -->
+plotly::plot_ly(
+  data = df_EU,
+  x = ~country,
+  # y = ~unrecovered,
+  y = ~ confirmed,
+  # text =  ~ confirmed,
+  # textposition = 'auto',
+  type = "bar",
+  name = "Confirmed",
+  marker = list(color = active_color)
+) %>%
+  plotly::add_trace(
+    y = ~death,
+    # text =  ~ death,
+    # textposition = 'auto',
+    name = "Death",
+    marker = list(color = death_color)
+  ) %>%
+  plotly::layout(
+    barmode = "stack",
+    yaxis = list(title = "Total cases"),
+    xaxis = list(title = ""),
+    hovermode = "compare",
+    margin = list(
+      # l = 60,
+      # r = 40,
+      b = 10,
+      t = 10,
+      pad = 2
+    )
+  )
+```
 
 
-<!-- Map -->
-<!-- ======================================================================= -->
 
-<!-- ### **World map of cases** (*use + and - icons to zoom in/out*) -->
+Map
+=======================================================================
 
-<!-- ```{r} -->
-<!-- # map tab added by Art Steinmetz -->
-<!-- library(leaflet) -->
-<!-- library(leafpop) -->
-<!-- library(purrr) -->
-<!-- cv_data_for_plot <- coronavirus %>% -->
-<!--   # dplyr::filter(Country.Region == "Belgium") %>% -->
-<!--   dplyr::filter(cases > 0) %>% -->
-<!--   dplyr::group_by(Country.Region, Province.State, Lat, Long, type) %>% -->
-<!--   dplyr::summarise(cases = sum(cases)) %>% -->
-<!--   dplyr::mutate(log_cases = 2 * log(cases)) %>% -->
-<!--   dplyr::ungroup() -->
-<!-- cv_data_for_plot.split <- cv_data_for_plot %>% split(cv_data_for_plot$type) -->
-<!-- pal <- colorFactor(c("orange", "red", "green"), domain = c("confirmed", "death", "recovered")) -->
-<!-- map_object <- leaflet() %>% addProviderTiles(providers$Stamen.Toner) -->
-<!-- names(cv_data_for_plot.split) %>% -->
-<!--   purrr::walk(function(df) { -->
-<!--     map_object <<- map_object %>% -->
-<!--       addCircleMarkers( -->
-<!--         data = cv_data_for_plot.split[[df]], -->
-<!--         lng = ~Long, lat = ~Lat, -->
-<!--         #                 label=~as.character(cases), -->
-<!--         color = ~ pal(type), -->
-<!--         stroke = FALSE, -->
-<!--         fillOpacity = 0.8, -->
-<!--         radius = ~log_cases, -->
-<!--         popup = leafpop::popupTable(cv_data_for_plot.split[[df]], -->
-<!--           feature.id = FALSE, -->
-<!--           row.numbers = FALSE, -->
-<!--           zcol = c("type", "cases", "Country.Region", "Province.State") -->
-<!--         ), -->
-<!--         group = df, -->
-<!--         #                 clusterOptions = markerClusterOptions(removeOutsideVisibleBounds = F), -->
-<!--         labelOptions = labelOptions( -->
-<!--           noHide = F, -->
-<!--           direction = "auto" -->
-<!--         ) -->
-<!--       ) -->
-<!--   }) -->
+### **World map of cases** (*use + and - icons to zoom in/out*)
 
-<!-- map_object %>% -->
-<!--   addLayersControl( -->
-<!--     overlayGroups = names(cv_data_for_plot.split), -->
-<!--     options = layersControlOptions(collapsed = FALSE) -->
-<!--   ) -->
-<!-- ``` -->
+```{r}
+# map tab added by Art Steinmetz
+library(leaflet)
+library(leafpop)
+library(purrr)
+cv_data_for_plot <- coronavirus %>%
+  dplyr::filter(cases > 0) %>%
+  dplyr::group_by(Country.Region, Province.State, Lat, Long, type) %>%
+  dplyr::summarise(cases = sum(cases)) %>%
+  dplyr::mutate(log_cases = 2 * log(cases)) %>%
+  dplyr::ungroup()
+cv_data_for_plot.split <- cv_data_for_plot %>% split(cv_data_for_plot$type)
+pal <- colorFactor(c("orange", "red", "green"), domain = c("confirmed", "death", "recovered"))
+map_object <- leaflet() %>% addProviderTiles(providers$Stamen.Toner)
+names(cv_data_for_plot.split) %>%
+  purrr::walk(function(df) {
+    map_object <<- map_object %>%
+      addCircleMarkers(
+        data = cv_data_for_plot.split[[df]],
+        lng = ~Long, lat = ~Lat,
+        #                 label=~as.character(cases),
+        color = ~ pal(type),
+        stroke = FALSE,
+        fillOpacity = 0.8,
+        radius = ~log_cases,
+        popup = leafpop::popupTable(cv_data_for_plot.split[[df]],
+          feature.id = FALSE,
+          row.numbers = FALSE,
+          zcol = c("type", "cases", "Country.Region", "Province.State")
+        ),
+        group = df,
+        #                 clusterOptions = markerClusterOptions(removeOutsideVisibleBounds = F),
+        labelOptions = labelOptions(
+          noHide = F,
+          direction = "auto"
+        )
+      )
+  })
+
+map_object %>%
+  addLayersControl(
+    overlayGroups = names(cv_data_for_plot.split),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+```
 
 
 
