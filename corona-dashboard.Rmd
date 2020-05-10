@@ -38,8 +38,8 @@ df <- coronavirus %>%
     names_from = type,
     values_from = total
   ) %>%
-  # dplyr::mutate(unrecovered = confirmed - ifelse(is.na(recovered), 0, recovered) - ifelse(is.na(death), 0, death)) %>%
-  dplyr::mutate(unrecovered = confirmed - ifelse(is.na(death), 0, death)) %>%
+  dplyr::mutate(unrecovered = confirmed - ifelse(is.na(recovered), 0, recovered) - ifelse(is.na(death), 0, death)) %>%
+  # dplyr::mutate(unrecovered = confirmed - ifelse(is.na(death), 0, death)) %>%
   dplyr::arrange(-confirmed) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(country = dplyr::if_else(Country.Region == "United Arab Emirates", "UAE", Country.Region)) %>%
@@ -59,7 +59,6 @@ df_daily <- coronavirus %>%
   dplyr::arrange(date) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(active = confirmed - death - recovered) %>%
-  dplyr::mutate(active = confirmed - death) %>%
   dplyr::mutate(
     confirmed_cum = cumsum(confirmed),
     death_cum = cumsum(death),
@@ -99,12 +98,28 @@ valueBox(value = paste(format(sum(df$unrecovered, na.rm = TRUE), big.mark = ",")
          color = active_color)
 ```
 
+<!-- ### recovered {.value-box} -->
+
+<!-- ```{r} -->
+
+<!-- valueBox( -->
+<!--   value = paste(format(sum(df$recovered), big.mark = ","), "", sep = " "), -->
+<!--   caption = "Recovery cases", -->
+<!--   icon = "fas fa-smile", -->
+<!--   color = recovered_color -->
+<!-- ) -->
+<!-- ``` -->
+
 ### recovered {.value-box}
 
 ```{r}
 
 valueBox(
-  value = paste(format(sum(df$recovered), big.mark = ","), "", sep = " "),
+  value = paste(format(sum(df$recovered, na.rm = TRUE), big.mark = ","), " (",
+    round(100 * sum(df$recovered, na.rm = TRUE) / sum(df$confirmed), 1),
+    "%)",
+    sep = ""
+  ),
   caption = "Recovery cases",
   icon = "fas fa-smile",
   color = recovered_color
