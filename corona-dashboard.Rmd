@@ -211,19 +211,6 @@ plotly::plot_ly(data = df_daily,
     ax = -10,
     ay = -90
   ) %>%
-  plotly::add_annotations(
-    x = as.Date("2020-02-29"),
-    y = 3,
-    text = paste("First death (Seattle)"),
-    xref = "x",
-    yref = "y",
-    arrowhead = 5,
-    arrowhead = 3,
-    arrowsize = 1,
-    showarrow = TRUE,
-    ax = -90,
-    ay = -90
-  ) %>%
   plotly::layout(
     title = "",
     yaxis = list(title = "Cumulative number of cases"),
