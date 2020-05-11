@@ -50,6 +50,7 @@ df <- coronavirus %>%
 
 df_daily <- coronavirus %>%
   dplyr::filter(Country.Region == "US") %>%
+  dplyr::filter(date >= "2020-03-01") %>%
   dplyr::group_by(date, type) %>%
   dplyr::summarise(total = sum(cases, na.rm = TRUE)) %>%
   tidyr::pivot_wider(
@@ -59,6 +60,7 @@ df_daily <- coronavirus %>%
   dplyr::arrange(date) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(active = confirmed - death - recovered) %>%
+  
   dplyr::mutate(
     confirmed_cum = cumsum(confirmed),
     death_cum = cumsum(death),
@@ -146,70 +148,36 @@ Row
 -----------------------------------------------------------------------
 
 ### **Daily cumulative cases by type** (US only)
-    
+
 ```{r}
-plotly::plot_ly(data = df_daily,
+plotly::plot_ly(data = df_daily) %>%
+  plotly::add_trace(
                 x = ~date,
                 y = ~active_cum,
                 name= 'Active',
-                fillcolor=active_color,
                 type='scatter',
-                mode = 'none',
-                stackgroup = 'one') %>%
-  # plotly::add_trace(
-  #   #x = ~date,
-  #   #y = ~active_cum,
-  #   y = ~confirmed_cum,
-  #   type = "scatter",
-  #   mode = "none",
-  #   # name = "Active",
-  #   name = "Confirmed",
-  #   line = list(color = confirmed_color),
-  #   marker = list(color = confirmed_color)
-  # ) %>%
-  # plotly::add_trace(
-  #   x = ~date,
-  #   y = ~active_cum,
-  #   #y = ~confirmed_cum,
-  #   type = "scatter",
-  #   mode = "lines+markers",
-  #   name = "Active",
-  #   # name = "Confirmed",
-  #   line = list(color = active_color),
-  #   marker = list(color = active_color)
-  # ) %>%
-  plotly::add_trace(
-    # x = ~date,
-    y = ~death_cum,
-    #type = "scatter",
-    #mode = "lines+markers",
-    name = "Death",
-    fillcolor=death_color
-    #line = list(color = death_color),
-    #marker = list(color = death_color)
+                mode = 'lines+markers',
+                line = list(color = active_color),
+                marker = list(color = active_color)
+                ) %>%
+    plotly::add_trace(
+              x = ~date,
+              y = ~recovered_cum,
+              name = "Recovered",
+              type = "scatter",
+              mode = "lines+markers",
+              line = list(color = recovered_color),
+              marker = list(color = recovered_color)
+              
   ) %>%
-  plotly::add_trace(
-    x = ~date,
-    y = ~recovered_cum,
-    #type = "scatter",
-    #mode = "lines+markers",
-    name = "Recovered",
-    #line = list(color = recovered_color),
-    #marker = list(color = recovered_color)
-    fillcolor=recovered_color
-  ) %>%
-  plotly::add_annotations(
-    x = as.Date("2020-01-19"),
-    y = 1,
-    text = paste("First case (Washington State)"),
-    xref = "x",
-    yref = "y",
-    arrowhead = 5,
-    arrowhead = 3,
-    arrowsize = 1,
-    showarrow = TRUE,
-    ax = -10,
-    ay = -90
+    plotly::add_trace(
+              x = ~date,
+              y = ~death_cum,
+              name = "Death",
+              type = "scatter",
+              mode = "lines+markers",
+              line = list(color = death_color),
+              marker = list(color = death_color)
   ) %>%
   plotly::layout(
     title = "",
@@ -218,6 +186,7 @@ plotly::plot_ly(data = df_daily,
     legend = list(x = 0.1, y = 0.9),
     hovermode = "compare"
   )
+
 ```
 
 Comparison
@@ -292,7 +261,7 @@ daily_confirmed %>%
   )
 ```
  
-### **Cases distribution by type**
+### **Cumulative Cases vs Other Countries**
 
 ```{r daily_summary}
 df_EU <- coronavirus %>%
@@ -328,13 +297,6 @@ plotly::plot_ly(
   name = "Confirmed",
   marker = list(color = active_color)
 ) %>%
-  plotly::add_trace(
-    y = ~death,
-    # text =  ~ death,
-    # textposition = 'auto',
-    name = "Death",
-    marker = list(color = death_color)
-  ) %>%
   plotly::layout(
     barmode = "stack",
     yaxis = list(title = "Total cases"),
