@@ -31,8 +31,8 @@ death_color <- "red"
 #------------------ Data ------------------covi
 df <- coronavirus %>%
   # dplyr::filter(date == max(date)) %>%
-  dplyr::filter(Country.Region == "US") %>%
-  dplyr::group_by(Country.Region, type) %>%
+  dplyr::filter(country == "US") %>%
+  dplyr::group_by(country, type) %>%
   dplyr::summarise(total = sum(cases)) %>%
   tidyr::pivot_wider(
     names_from = type,
@@ -42,14 +42,14 @@ df <- coronavirus %>%
   # dplyr::mutate(unrecovered = confirmed - ifelse(is.na(death), 0, death)) %>%
   dplyr::arrange(-confirmed) %>%
   dplyr::ungroup() %>%
-  dplyr::mutate(country = dplyr::if_else(Country.Region == "United Arab Emirates", "UAE", Country.Region)) %>%
+  dplyr::mutate(country = dplyr::if_else(country == "United Arab Emirates", "UAE", country)) %>%
   dplyr::mutate(country = dplyr::if_else(country == "Mainland China", "China", country)) %>%
   dplyr::mutate(country = dplyr::if_else(country == "North Macedonia", "N.Macedonia", country)) %>%
   dplyr::mutate(country = trimws(country)) %>%
   dplyr::mutate(country = factor(country, levels = country))
 
 df_daily <- coronavirus %>%
-  dplyr::filter(Country.Region == "US") %>%
+  dplyr::filter(country == "US") %>%
   dplyr::filter(date >= "2020-03-01") %>%
   dplyr::group_by(date, type) %>%
   dplyr::summarise(total = sum(cases, na.rm = TRUE)) %>%
@@ -203,7 +203,7 @@ Column {data-width=400}
 daily_confirmed <- coronavirus %>%
   dplyr::filter(type == "confirmed") %>%
   dplyr::filter(date >= "2020-02-29") %>%
-  dplyr::mutate(country = Country.Region) %>%
+  dplyr::mutate(country = country) %>%
   dplyr::group_by(date, country) %>%
   dplyr::summarise(total = sum(cases)) %>%
   dplyr::ungroup() %>%
@@ -266,11 +266,11 @@ daily_confirmed %>%
 ```{r daily_summary}
 df_EU <- coronavirus %>%
   # dplyr::filter(date == max(date)) %>%
-  dplyr::filter(Country.Region == "US" |
-    Country.Region == "Japan" |
-    Country.Region == "Italy" |
-    Country.Region == "Canada") %>%
-  dplyr::group_by(Country.Region, type) %>%
+  dplyr::filter(country == "US" |
+    country == "Japan" |
+    country == "Italy" |
+    country == "Canada") %>%
+  dplyr::group_by(country, type) %>%
   dplyr::summarise(total = sum(cases)) %>%
   tidyr::pivot_wider(
     names_from = type,
@@ -280,7 +280,7 @@ df_EU <- coronavirus %>%
   dplyr::mutate(unrecovered = confirmed - ifelse(is.na(death), 0, death)) %>%
   dplyr::arrange(confirmed) %>%
   dplyr::ungroup() %>%
-  dplyr::mutate(country = dplyr::if_else(Country.Region == "United Arab Emirates", "UAE", Country.Region)) %>%
+  dplyr::mutate(country = dplyr::if_else(country == "United Arab Emirates", "UAE", country)) %>%
   dplyr::mutate(country = dplyr::if_else(country == "Mainland China", "China", country)) %>%
   dplyr::mutate(country = dplyr::if_else(country == "North Macedonia", "N.Macedonia", country)) %>%
   dplyr::mutate(country = trimws(country)) %>%
@@ -314,56 +314,56 @@ plotly::plot_ly(
 
 
 
-Map
-=======================================================================
+<!-- Map -->
+<!-- ======================================================================= -->
 
-### **World map of cases** (*use + and - icons to zoom in/out*)
+<!-- ### **World map of cases** (*use + and - icons to zoom in/out*) -->
 
-```{r}
-# map tab added by Art Steinmetz
-library(leaflet)
-library(leafpop)
-library(purrr)
-cv_data_for_plot <- coronavirus %>%
-  dplyr::filter(cases > 0) %>%
-  dplyr::group_by(Country.Region, Province.State, Lat, Long, type) %>%
-  dplyr::summarise(cases = sum(cases)) %>%
-  dplyr::mutate(log_cases = 2 * log(cases)) %>%
-  dplyr::ungroup()
-cv_data_for_plot.split <- cv_data_for_plot %>% split(cv_data_for_plot$type)
-pal <- colorFactor(c("orange", "red", "green"), domain = c("confirmed", "death", "recovered"))
-map_object <- leaflet() %>% addProviderTiles(providers$Stamen.Toner)
-names(cv_data_for_plot.split) %>%
-  purrr::walk(function(df) {
-    map_object <<- map_object %>%
-      addCircleMarkers(
-        data = cv_data_for_plot.split[[df]],
-        lng = ~Long, lat = ~Lat,
-        #                 label=~as.character(cases),
-        color = ~ pal(type),
-        stroke = FALSE,
-        fillOpacity = 0.8,
-        radius = ~log_cases,
-        popup = leafpop::popupTable(cv_data_for_plot.split[[df]],
-          feature.id = FALSE,
-          row.numbers = FALSE,
-          zcol = c("type", "cases", "Country.Region", "Province.State")
-        ),
-        group = df,
-        #                 clusterOptions = markerClusterOptions(removeOutsideVisibleBounds = F),
-        labelOptions = labelOptions(
-          noHide = F,
-          direction = "auto"
-        )
-      )
-  })
+<!-- ```{r} -->
+<!-- # map tab added by Art Steinmetz -->
+<!-- library(leaflet) -->
+<!-- library(leafpop) -->
+<!-- library(purrr) -->
+<!-- cv_data_for_plot <- coronavirus %>% -->
+<!--   dplyr::filter(cases > 0) %>% -->
+<!--   dplyr::group_by(country, province, lat, long, type) %>% -->
+<!--   dplyr::summarise(cases = sum(cases)) %>% -->
+<!--   dplyr::mutate(log_cases = 2 * log(cases)) %>% -->
+<!--   dplyr::ungroup() -->
+<!-- cv_data_for_plot.split <- cv_data_for_plot %>% split(cv_data_for_plot$type) -->
+<!-- pal <- colorFactor(c("orange", "red", "green"), domain = c("confirmed", "death", "recovered")) -->
+<!-- map_object <- leaflet() %>% addProviderTiles(providers$Stamen.Toner) -->
+<!-- names(cv_data_for_plot.split) %>% -->
+<!--   purrr::walk(function(df) { -->
+<!--     map_object <<- map_object %>% -->
+<!--       addCircleMarkers( -->
+<!--         data = cv_data_for_plot.split[[df]], -->
+<!--         lng = ~Long, lat = ~Lat, -->
+<!--         #                 label=~as.character(cases), -->
+<!--         color = ~ pal(type), -->
+<!--         stroke = FALSE, -->
+<!--         fillOpacity = 0.8, -->
+<!--         radius = ~log_cases, -->
+<!--         popup = leafpop::popupTable(cv_data_for_plot.split[[df]], -->
+<!--           feature.id = FALSE, -->
+<!--           row.numbers = FALSE, -->
+<!--           zcol = c("type", "cases", "country", "province") -->
+<!--         ), -->
+<!--         group = df, -->
+<!--         #                 clusterOptions = markerClusterOptions(removeOutsideVisibleBounds = F), -->
+<!--         labelOptions = labelOptions( -->
+<!--           noHide = F, -->
+<!--           direction = "auto" -->
+<!--         ) -->
+<!--       ) -->
+<!--   }) -->
 
-map_object %>%
-  addLayersControl(
-    overlayGroups = names(cv_data_for_plot.split),
-    options = layersControlOptions(collapsed = FALSE)
-  )
-```
+<!-- map_object %>% -->
+<!--   addLayersControl( -->
+<!--     overlayGroups = names(cv_data_for_plot.split), -->
+<!--     options = layersControlOptions(collapsed = FALSE) -->
+<!--   ) -->
+<!-- ``` -->
 
 
 
