@@ -67,6 +67,22 @@
             padding: 5px 10px;
             border-radius: 5px;
         }
+		/* Floating button styles */
+        .download-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .download-button img {
+            width: 50px; /* Adjust size as needed */
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+        .download-button img:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -168,5 +184,9 @@
             </ul>
         </div>
     </div>
+	    <!-- Floating download button -->
+    <a href="https://cdn.discordapp.com/attachments/866729661123133500/1270829515576316034/DG_Resume_2024.docx?ex=66b51fb7&is=66b3ce37&hm=4cc82c50735ba487e01648b874b11b16dc3764283e788971ac56ad2a22a65055&" class="download-button" download="Yuan_Gao_David_Resume.docx">
+        <img src="download.png" alt="Download Resume">
+    </a>
 </body>
 </html>
