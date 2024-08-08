@@ -47,7 +47,6 @@ export const homePageMeta: HomepageMeta = {
 export const SectionId = {
   Hero: 'hero',
   About: 'about',
-  Contact: 'contact',
   Portfolio: 'portfolio',
   Resume: 'resume',
   Skills: 'skills',
@@ -83,11 +82,6 @@ export const heroData: Hero = {
       text: 'Resume',
       primary: true,
       Icon: ArrowDownTrayIcon,
-    },
-    {
-      href: `#${SectionId.Contact}`,
-      text: 'Contact',
-      primary: false,
     },
   ],
 };
@@ -315,24 +309,9 @@ export const testimonial: TestimonialSection = {
  */
 
 export const contact: ContactSection = {
-  headerText: 'Get in touch.',
-  description: 'Feel free to reach out if you want to contact me!',
+  headerText: '',
+  description: '',
   items: [
-    {
-      type: ContactType.Email,
-      text: 'davidgao93@gmail.com',
-      href: 'mailto:davidgao93@gmail.com',
-    },
-    {
-      type: ContactType.Location,
-      text: 'Fairfax VA, USA',
-      href: 'https://maps.app.goo.gl/pP8mzh4pC2jdifEn6',
-    },
-    {
-      type: ContactType.Github,
-      text: 'davidgao93',
-      href: 'https://github.com/davidgao93/',
-    },
   ],
 };
 
