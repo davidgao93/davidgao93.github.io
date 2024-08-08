@@ -79,7 +79,7 @@ export const heroData: Hero = {
   ),
   actions: [
     {
-      href: '/assets/resume.pdf',
+      href: 'https://cdn.discordapp.com/attachments/866729661123133500/1271227892726104064/DG_Resume_2024.pdf?ex=66b692bb&is=66b5413b&hm=2e257cc159babea4c5bcd1b1aa1a67b7139e8aef1374ba617e09470aa23ff3cc&',
       text: 'Resume',
       primary: true,
       Icon: ArrowDownTrayIcon,
@@ -294,12 +294,17 @@ export const testimonial: TestimonialSection = {
     },
     {
       name: 'Joseph Timchenko',
-      text: 'Thank you, Sir. This helped me formulate a great response.',
+      text: 'Working with David has been an absolute game-changer for our institution - their innovative approach and dedication to creating engaging learning experiences have significantly enhanced our students MicroStrategy knowledge.',
       //image: 'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/14.jpg',
     },
     {
       name: 'Hugh Owens',
       text: 'This is a result of your hard work, commitment to excellence, and your handling of increased responsibilities in your role.',
+      //image: 'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/69.jpg',
+    },
+    {
+      name: 'Ziyao Zhang',
+      text: 'Very patient and detail oriented when teaching others how to use and modify his programs.',
       //image: 'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/69.jpg',
     },
   ],
