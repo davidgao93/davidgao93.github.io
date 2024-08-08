@@ -1,5 +1,6 @@
 import {FC, memo, useCallback, useMemo, useState} from 'react';
 import sgMail from '@sendgrid/mail';
+import getConfig from 'next/config';
 
 interface FormData {
   name: string;
@@ -32,8 +33,10 @@ const ContactForm: FC = memo(() => {
 
   const handleSendMessage = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
+      const { publicRuntimeConfig } = getConfig();
+      const apiKey = publicRuntimeConfig.SENDGRID_API_KEY;
+      sgMail.setApiKey(apiKey);
       event.preventDefault();
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
         to: 'david@david-gao.com', // Change to your recipient
         from: data.email, // Change to your verified sender
