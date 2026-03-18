@@ -487,6 +487,8 @@ p {
 }
 .why-item-text, .why-text {
   color: var(--text-muted);
+  min-width: 0; /* <--- ADD THIS LINE to fix the spillover */
+  word-wrap: break-word; /* <--- ADD THIS LINE for long text */
 }
 .why-item-text strong, .why-text strong {
   color: var(--text-main);
@@ -561,4 +563,60 @@ p {
   justify-content: space-between;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+/* =========================================
+   Toggle Buttons (Public vs Private)
+   ========================================= */
+.toggle-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  background: #f3f4f6;
+  padding: 4px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+}
+
+.toggle-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.toggle-btn:hover {
+  color: var(--text-main);
+  background: rgba(229, 231, 235, 0.5);
+}
+
+.toggle-btn.active {
+  color: var(--accent);
+  background: #ffffff;
+  border-color: var(--border-subtle);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* =========================================
+   Inline Code Snippets
+   ========================================= */
+.code-subnet {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: #f1f5f9;
+  color: #0f172a;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  border: 1px solid #e2e8f0;
 }
