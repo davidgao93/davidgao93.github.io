@@ -156,3 +156,50 @@
     });
   }
 })();
+
+/* =========================================================
+   PUBLIC / PRIVATE SUBNET TOGGLE
+   ========================================================= */
+(function () {
+  var toggleButtons = document.querySelectorAll('.toggle-btn');
+  if (!toggleButtons || toggleButtons.length === 0) return;
+
+  var publicSteps  = document.getElementById('steps-public');
+  var privateSteps = document.getElementById('steps-private');
+
+  // If the containers aren't present, skip this feature
+  if (!publicSteps || !privateSteps) return;
+
+  function setView(view) {
+    toggleButtons.forEach(function (btn) {
+      var btnView = btn.getAttribute('data-view');
+      if (btnView === view) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    if (view === 'public') {
+      publicSteps.style.display  = '';
+      privateSteps.style.display = 'none';
+    } else {
+      publicSteps.style.display  = 'none';
+      privateSteps.style.display = '';
+    }
+  }
+
+  // Attach click handlers
+  toggleButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var view = btn.getAttribute('data-view');
+      if (!view) return;
+      setView(view);
+    });
+  });
+
+  // Initialize from whatever button is marked active, default to "public"
+  var activeBtn = document.querySelector('.toggle-btn.active');
+  var initialView = activeBtn ? activeBtn.getAttribute('data-view') : 'public';
+  setView(initialView || 'public');
+})();
