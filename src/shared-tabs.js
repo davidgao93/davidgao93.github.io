@@ -1,15 +1,4 @@
 (function () {
-  /* =========================================================
-     STEP COMPLETION TOGGLING
-     ========================================================= */
-  var steps = document.querySelectorAll('.step');
-  if (steps && steps.length > 0) {
-    steps.forEach(function (step) {
-      step.addEventListener('click', function () {
-        step.classList.toggle('completed');
-      });
-    });
-  }
 
   /* =========================================================
      WHY PANEL COLLAPSE / EXPAND
