@@ -203,3 +203,173 @@
   var initialView = activeBtn ? activeBtn.getAttribute('data-view') : 'public';
   setView(initialView || 'public');
 })();
+
+/* =========================================================
+   GENERIC TAB TOGGLE (e.g., Windows / macOS)
+   ========================================================= */
+(function () {
+  // Helper: initialize tabs within a given root element
+  function initTabsInRoot(root) {
+    if (!root) return;
+
+    var buttons = root.querySelectorAll('.toggle-btn[data-view]');
+    if (!buttons || buttons.length === 0) return;
+
+    // Panels are any element with data-view-panel inside the same root
+    var panels = root.querySelectorAll('[data-view-panel]');
+    if (!panels || panels.length === 0) return;
+
+    function setView(view) {
+      // Toggle active class on buttons
+      buttons.forEach(function (btn) {
+        var btnView = btn.getAttribute('data-view');
+        if (btnView === view) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Show/hide matching panels
+      panels.forEach(function (panel) {
+        var panelView = panel.getAttribute('data-view-panel');
+        if (panelView === view) {
+          panel.style.display = '';
+        } else {
+          panel.style.display = 'none';
+        }
+      });
+    }
+
+    // Attach click handlers
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var view = btn.getAttribute('data-view');
+        if (!view) return;
+        setView(view);
+      });
+    });
+
+    // Initialize from an active button, or default to the first button’s view
+    var activeBtn = root.querySelector('.toggle-btn[data-view].active') || buttons[0];
+    if (!activeBtn) return;
+
+    var initialView = activeBtn.getAttribute('data-view');
+    if (!initialView) return;
+
+    setView(initialView);
+  }
+
+  // Initialize all containers that use this pattern.
+  // You can scope this further if needed (e.g., to #cmc-os-toggle).
+  document.addEventListener('DOMContentLoaded', function () {
+    // Any element that contains toggle-btns and view panels
+    var possibleRoots = document.querySelectorAll('.block-root, .os-panels, body');
+    var seen = new WeakSet();
+
+    possibleRoots.forEach(function (root) {
+      if (!root || seen.has(root)) return;
+      // Only treat it as a root if it actually has .toggle-btn[data-view]
+      if (root.querySelector && root.querySelector('.toggle-btn[data-view]')) {
+        initTabsInRoot(root);
+        seen.add(root);
+      }
+    });
+  });
+})();
+
+/* =========================================================
+   GENERIC COPY-TO-CLIPBOARD FOR CODE BY ID
+   ========================================================= */
+(function () {
+  // This feature is additive to your existing copy logic.
+  // It only acts when data-copy-target refers to an element ID that exists.
+  function copyText(text, onSuccess, onError) {
+    if (!text) {
+      if (onError) onError();
+      return;
+    }
+
+    function legacyCopy() {
+      var textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      textarea.style.pointerEvents = 'none';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        var successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        if (successful && onSuccess) onSuccess();
+        else if (!successful && onError) onError();
+      } catch (e) {
+        document.body.removeChild(textarea);
+        if (onError) onError();
+      }
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        function () { if (onSuccess) onSuccess(); },
+        function () { legacyCopy(); }
+      );
+    } else {
+      legacyCopy();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var buttons = document.querySelectorAll('.copy-btn[data-copy-target]');
+    if (!buttons || buttons.length === 0) return;
+
+    buttons.forEach(function (btn) {
+      // Avoid double-binding if other copy handlers already exist
+      if (btn._genericCopyBound) return;
+      btn._genericCopyBound = true;
+
+      btn.addEventListener('click', function (event) {
+        var target = btn.getAttribute('data-copy-target');
+        if (!target) return;
+
+        // If existing shared logic handles specific targets (like "eks", "storage"),
+        // let that run and do not prevent it.
+        // We only handle the case where target is an element ID present in the DOM.
+        var codeEl = document.getElementById(target);
+        if (!codeEl) return;
+
+        var text = codeEl.textContent || '';
+        if (!text) return;
+
+        // Stop this click from bubbling into other copy handlers if you prefer:
+        // event.stopPropagation();
+
+        var labelEl = btn.querySelector('.copy-label');
+        var originalLabel = labelEl ? labelEl.textContent : btn.textContent;
+
+        function setLabel(tempText) {
+          if (labelEl) {
+            labelEl.textContent = tempText;
+          } else {
+            btn.textContent = tempText;
+          }
+        }
+
+        copyText(
+          text,
+          function () {
+            // Success: temporarily show "Copied"
+            setLabel('Copied');
+            setTimeout(function () {
+              setLabel(originalLabel || 'Copy');
+            }, 1200);
+          },
+          function () {
+            // Optional: error handling – just revert label
+            setLabel(originalLabel || 'Copy');
+          }
+        );
+      });
+    });
+  });
+})();
