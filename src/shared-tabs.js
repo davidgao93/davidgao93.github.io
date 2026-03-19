@@ -338,7 +338,7 @@
         var codeEl = document.getElementById(target);
         if (!codeEl) return;
 
-        var text = codeEl.textContent || '';
+        var text = codeEl.innerText || '';
         if (!text) return;
 
         // Stop this click from bubbling into other copy handlers if you prefer:
