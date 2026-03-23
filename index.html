@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Name Reveal!</title>
+    <!-- Cute, rounded baby font -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg-cream: #FDFBF7;
+            --btn-blue: #AEC6CF;
+            --btn-hover: #9db2ba;
+            --text-dark: #5c5c5c;
+            --text-blue: #7ba8b9;
+        }
+
+        body {
+            background-color: var(--bg-cream);
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            color: var(--text-dark);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .subtitle {
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+            opacity: 0.7;
+            z-index: 10;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1 / 1;
+            margin-bottom: 40px;
+            z-index: 5;
+        }
+
+        /* The little arrow pointer */
+        .pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transform-origin: center center;
+        }
+
+        button {
+            background-color: var(--btn-blue);
+            color: white;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(174, 198, 207, 0.4);
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        button:hover {
+            background-color: var(--btn-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(174, 198, 207, 0.5);
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 4px 10px rgba(174, 198, 207, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        /* --- New Giant Text Overlay --- */
+        #winnerOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(253, 251, 247, 0.85); /* Semi-transparent cream */
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            z-index: 100;
+        }
+
+        #winnerOverlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .winner-title {
+            font-size: 2rem;
+            color: var(--text-dark);
+            margin-bottom: -20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease 0.3s; /* Slight delay */
+        }
+
+        #winnerOverlay.visible .winner-title {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .winner-name {
+            font-size: clamp(5rem, 15vw, 12rem);
+            color: var(--text-blue);
+            font-weight: 900;
+            margin: 0;
+            text-shadow: 4px 4px 0px rgba(0,0,0,0.05);
+            /* Starts small and scales up playfully */
+            transform: scale(0.3) rotate(-5deg);
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s;
+        }
+
+        #winnerOverlay.visible .winner-name {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Baby Name Reveal</h1>
+    <div class="subtitle">Turn your audio on!</div>
+
+    <div class="wheel-container">
+        <!-- SVG Pointer -->
+        <svg class="pointer" viewBox="0 0 40 40" width="50" height="50">
+            <polygon points="20,40 5,5 35,5" fill="#FFE5A3" stroke="#FFFFFF" stroke-width="2"/>
+        </svg>
+        <canvas id="wheelCanvas" width="600" height="600"></canvas>
+    </div>
+
+    <button id="spinBtn">SPIN THE WHEEL!</button>
+
+    <!-- The Giant Reveal Overlay -->
+    <div id="winnerOverlay">
+        <div class="winner-title">The name is...</div>
+        <div class="winner-name" id="winnerText">AIDAN</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const spinBtn = document.getElementById('spinBtn');
+        const winnerOverlay = document.getElementById('winnerOverlay');
+
+        // Beautiful pastel palette
+        const colors =[
+            "#AEC6CF", // Blue
+            "#B2D3C2", // Green
+            "#E8B4B8", // Rose
+            "#CDB4DB", // Lavender
+            "#AEC6CF", "#CDB4DB", "#B2D3C2", "#E8B4B8", 
+            "#AEC6CF", "#E8B4B8", "#B2D3C2", "#CDB4DB"
+        ];
+
+        // 12 slices. Aidan is at Index 0. Charlie is at Index 1.
+        const names =[
+            "Aidan", "Charlie", "Dest", "St Augustin", 
+            "Aidan", "St Augustin", "Charlie", "Dest", 
+            "Aidan", "Dest", "Charlie", "St Augustin"
+        ];
+
+        const numSlices = names.length;
+        const sliceAngle = (2 * Math.PI) / numSlices;
+
+        function drawWheel() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < numSlices; i++) {
+                const startAngle = (i * sliceAngle) - (Math.PI / 2) - (sliceAngle / 2);
+                const endAngle = startAngle + sliceAngle;
+
+                ctx.beginPath();
+                ctx.moveTo(300, 300);
+                ctx.arc(300, 300, 300, startAngle, endAngle);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#FFFFFF";
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(300, 300);
+                ctx.rotate(i * sliceAngle - Math.PI / 2);
+                ctx.textAlign = "right";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "#5c5c5c";
+                ctx.font = "bold 26px 'Nunito', sans-serif";
+                ctx.fillText(names[i], 270, 0); 
+                ctx.restore();
+            }
+
+            ctx.beginPath();
+            ctx.arc(300, 300, 20, 0, 2 * Math.PI);
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fill();
+            ctx.shadowColor = "rgba(0,0,0,0.1)";
+            ctx.shadowBlur = 10;
+        }
+
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playTick() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.05);
+        }
+
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        function spinWheel() {
+            if (isSpinning) return;
+            initAudio(); 
+            isSpinning = true;
+            spinBtn.disabled = true;
+
+            // THE BARELY-TIP-OVER MATH:
+            // 5 full spins = 1800 degrees.
+            // The boundary line between Charlie and Aidan is exactly at 345 degrees.
+            // By stopping exactly at 348 degrees, it ticks over the line into Aidan by a mere 3 degrees.
+            const targetRotation = 1800 + 348; 
+            const duration = 9000; // 9 seconds of suspense
+            const startTime = performance.now();
+            
+            // To properly calculate when the pointer crosses a slice line
+            let lastTick = Math.floor((currentRotation + 15) / 30);
+
+            function animate(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Cubic ease-out. This curve is what creates the "dying momentum" 
+                // effect. It will crawl agonizingly slowly over the final 2 seconds.
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                currentRotation = easeProgress * targetRotation;
+
+                canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+                // Play a tick sound every 30 degrees (the boundary of a slice)
+                const currentTick = Math.floor((currentRotation + 15) / 30);
+                if (currentTick > lastTick) {
+                    playTick();
+                    lastTick = currentTick;
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Wheel has stopped completely.
+                    setTimeout(showWinner, 500); // Tiny half-second beat for effect
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        function showWinner() {
+            winnerOverlay.classList.add('visible');
+            triggerConfetti();
+        }
+
+        function triggerConfetti() {
+            const count = 250;
+            const defaults = { origin: { y: 0.6 }, zIndex: 101 };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            // Big burst framing the text!
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+        }
+
+        // Initialize setup
+        drawWheel();
+        spinBtn.addEventListener('click', spinWheel);
+    </script>
+</body>
+</html>
