@@ -245,13 +245,6 @@ p {
 .why, .why-panel {
   background: var(--why-bg);
   border-left: 3px solid var(--accent);
-  max-height: 2000px;
-  overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.25s ease,
-              padding 0.3s ease,
-              border-width 0.3s ease,
-              margin 0.3s ease;
 }
 
 .section-title {
@@ -625,15 +618,7 @@ p {
   border-color: rgba(79, 109, 245, 0.35);
 }
 .why--collapsed {
-  max-height: 0 !important;
-  opacity: 0 !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
   pointer-events: none;
-  border-top-width: 0 !important;
-  border-bottom-width: 0 !important;
-  margin: 0 !important;
-  overflow: hidden;
 }
 
 .why-side-toggle {
@@ -787,4 +772,76 @@ p {
 }
 .toggle-btn.active {
   transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* =========================================
+   Progress Badge
+   ========================================= */
+.progress-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--panel-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  flex-shrink: 0;
+}
+.progress-badge--complete {
+  background: #e8f8ee;
+  color: #17713b;
+  border-color: rgba(26, 171, 82, 0.3);
+}
+
+/* =========================================
+   All Done Banner
+   ========================================= */
+.all-done-banner {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: #e8f8ee;
+  border: 1px solid rgba(26, 171, 82, 0.25);
+  color: #17713b;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 12px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+.all-done-banner--visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.all-done-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-pill);
+  background: var(--success);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* =========================================
+   Reduced Motion Accessibility
+   ========================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
