@@ -2,7 +2,8 @@
   /* =========================================================
      STEP COMPLETION TOGGLING
      ========================================================= */
-  var steps = document.querySelectorAll('.step');
+  // Supports both generic .step and specific .step-item
+  var steps = document.querySelectorAll('.step, .step-item');
   if (steps && steps.length > 0) {
     steps.forEach(function (step) {
       step.addEventListener('click', function () {
@@ -16,13 +17,12 @@
      ========================================================= */
   var sections        = document.getElementById('sections');
   var whyPanel        = document.getElementById('whyPanel');
-  var whyHeaderToggle = document.getElementById('whyHeaderToggle');
-  var whyHeaderIcon   = document.getElementById('whyHeaderIcon');
-  var whyHeaderLabel  = document.getElementById('whyHeaderLabel');
+  var whyHeaderToggle = document.getElementById('whyHeaderToggle') || document.getElementById('whyToggle');
+  var whyHeaderIcon   = document.getElementById('whyHeaderIcon') || document.getElementById('whyToggleArrow');
+  var whyHeaderLabel  = document.getElementById('whyHeaderLabel') || document.getElementById('whyToggleLabel');
   var whySideToggle   = document.getElementById('whySideToggle');
 
-  // Only enable the "why" behavior if core elements exist
-  if (sections && whyPanel && whyHeaderIcon && whyHeaderLabel && whySideToggle) {
+  if (sections && whyPanel && whySideToggle) {
     var isCollapsed = false;
 
     function applyWhyState() {
@@ -30,32 +30,34 @@
         whyPanel.classList.add('why--collapsed');
         sections.classList.add('sections--why-collapsed');
         whySideToggle.classList.add('why-side-toggle--visible');
-        whyHeaderIcon.textContent = '▶';
-        whyHeaderLabel.textContent = 'Show';
+        if (whyHeaderIcon) whyHeaderIcon.textContent = '▶';
+        if (whyHeaderLabel) whyHeaderLabel.textContent = 'Show';
       } else {
         whyPanel.classList.remove('why--collapsed');
         sections.classList.remove('sections--why-collapsed');
         whySideToggle.classList.remove('why-side-toggle--visible');
-        whyHeaderIcon.textContent = '▶';
-        whyHeaderLabel.textContent = 'Hide';
+        if (whyHeaderIcon) whyHeaderIcon.textContent = '▶';
+        if (whyHeaderLabel) whyHeaderLabel.textContent = 'Hide';
       }
     }
 
     if (whyHeaderToggle) {
-      whyHeaderToggle.addEventListener('click', function () {
+      whyHeaderToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
         isCollapsed = !isCollapsed;
         applyWhyState();
       });
     }
 
     if (whySideToggle) {
-      whySideToggle.addEventListener('click', function () {
-        isCollapsed = false;
+      whySideToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        isCollapsed = false; // Side toggle always expands
         applyWhyState();
       });
     }
 
-    // Initial state
+    // Initialize state
     applyWhyState();
   }
 
@@ -66,6 +68,13 @@
   var copyButtons = document.querySelectorAll('.copy-btn');
 
   function getCommandText(target) {
+    // 1. Allow pages to inject a global copy text function for dynamic scenarios
+    if (typeof window.getCustomCopyText === 'function') {
+      var customText = window.getCustomCopyText(target);
+      if (customText) return customText;
+    }
+
+    // 2. Fallback to hardcoded examples for legacy pages
     if (target === 'eks') {
       return [
         'aws eks update-kubeconfig --name <your-eks-cluster-name> --region <aws-region>',
@@ -78,6 +87,13 @@
         'kubectl get pv'
       ].join('\n');
     }
+    
+    // 3. Optional fallback to pulling static text direct from the div ID
+    var targetEl = document.getElementById(target);
+    if (targetEl) {
+      return targetEl.innerText.trim();
+    }
+
     return '';
   }
 
@@ -103,11 +119,8 @@
     try {
       var successful = document.execCommand('copy');
       document.body.removeChild(textarea);
-      if (successful) {
-        onSuccess();
-      } else {
-        onError();
-      }
+      if (successful) onSuccess();
+      else onError();
     } catch (e) {
       document.body.removeChild(textarea);
       onError();
@@ -126,7 +139,8 @@
 
   if (copyButtons && copyButtons.length > 0) {
     copyButtons.forEach(function (btn) {
-      btn.addEventListener('click', function () {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
         var target = btn.getAttribute('data-copy-target');
         var text = getCommandText(target);
         if (!text) return;
@@ -138,18 +152,13 @@
           text,
           function () {
             if (labelEl) labelEl.textContent = 'Copied';
-            showStatus(
-              'Commands copied. Paste into your terminal to run the check.'
-            );
+            showStatus('Content copied to clipboard.');
             setTimeout(function () {
               if (labelEl) labelEl.textContent = originalLabel || 'Copy';
             }, 1200);
           },
           function () {
-            showStatus(
-              'Unable to copy automatically. Please select and copy manually.',
-              true
-            );
+            showStatus('Unable to copy automatically. Please copy manually.', true);
           }
         );
       });
