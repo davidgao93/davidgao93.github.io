@@ -2,11 +2,15 @@
   /* =========================================================
      STEP COMPLETION TOGGLING
      ========================================================= */
-  // Supports both generic .step and specific .step-item
   var steps = document.querySelectorAll('.step, .step-item');
   if (steps && steps.length > 0) {
     steps.forEach(function (step) {
-      step.addEventListener('click', function () {
+      step.addEventListener('click', function (e) {
+        // Prevent toggling if user clicked an input field, button, or link
+        var targetTag = e.target.tagName.toLowerCase();
+        if (targetTag === 'input' || targetTag === 'textarea' || targetTag === 'button' || targetTag === 'a' || e.target.closest('button, a, input, textarea')) {
+          return;
+        }
         step.classList.toggle('completed');
       });
     });
@@ -36,7 +40,7 @@
         whyPanel.classList.remove('why--collapsed');
         sections.classList.remove('sections--why-collapsed');
         whySideToggle.classList.remove('why-side-toggle--visible');
-        if (whyHeaderIcon) whyHeaderIcon.textContent = '▶';
+        if (whyHeaderIcon) whyHeaderIcon.textContent = '▼'; // Down arrow when expanded
         if (whyHeaderLabel) whyHeaderLabel.textContent = 'Hide';
       }
     }
@@ -143,6 +147,7 @@
         e.stopPropagation();
         var target = btn.getAttribute('data-copy-target');
         var text = getCommandText(target);
+        
         if (!text) return;
 
         var labelEl = btn.querySelector('.copy-label');
