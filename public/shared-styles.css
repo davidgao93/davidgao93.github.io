@@ -219,18 +219,21 @@ p {
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
   gap: 16px;
   margin-top: 10px;
-  position: relative;
   align-items: flex-start;
   transition: all 0.25s ease;
 }
 
 .sections--why-collapsed {
-  grid-template-columns: minmax(0, 1fr);
+  /* narrow second column holds the sticky re-open button */
+  grid-template-columns: minmax(0, 1fr) 32px;
 }
 
 @media (max-width: 780px) {
   .sections, .sections--why-collapsed {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .why-side-toggle {
+    display: none !important;
   }
 }
 
@@ -245,6 +248,21 @@ p {
 .why, .why-panel {
   background: var(--why-bg);
   border-left: 3px solid var(--accent);
+  /* explicit grid placement so the side-toggle can safely share the same cell */
+  grid-column: 2;
+  grid-row: 1;
+}
+
+/* Sticky Why panel header — Hide button stays visible while scrolling */
+.why-panel .section-title {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--why-bg);
+  /* bleed to panel edges so background covers content scrolling underneath */
+  margin: -14px -14px 10px;
+  padding: 14px 14px 10px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .section-title {
@@ -622,13 +640,15 @@ p {
 }
 
 .why-side-toggle {
-  position: absolute;
-  right: -6px;
-  top: 0;
-  bottom: 0;
+  /* share grid cell (2,1) with the why-panel; display:none keeps it out of flow */
+  grid-column: 2;
+  grid-row: 1;
   display: none;
+  /* stretch to match the row height so the button can be sticky within it */
+  align-self: stretch;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   pointer-events: none;
 }
 .why-side-toggle-button {
@@ -644,6 +664,9 @@ p {
   cursor: pointer;
   font-size: 11px;
   pointer-events: auto;
+  /* sticky so it follows the scroll within its column */
+  position: sticky;
+  top: 20px;
   transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 .why-side-toggle-button:hover {
