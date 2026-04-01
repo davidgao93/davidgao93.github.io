@@ -245,6 +245,13 @@ p {
 .why, .why-panel {
   background: var(--why-bg);
   border-left: 3px solid var(--accent);
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.25s ease,
+              padding 0.3s ease,
+              border-width 0.3s ease,
+              margin 0.3s ease;
 }
 
 .section-title {
@@ -604,11 +611,30 @@ p {
   flex-shrink: 0;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
+
+/* Why panel arrow icon rotation */
+#whyHeaderIcon {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.why-icon--collapsed {
+  transform: rotate(-90deg);
+}
 .why-toggle-button:hover {
   background: #dce3ff;
   border-color: rgba(79, 109, 245, 0.35);
 }
-.why--collapsed { display: none; }
+.why--collapsed {
+  max-height: 0 !important;
+  opacity: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  pointer-events: none;
+  border-top-width: 0 !important;
+  border-bottom-width: 0 !important;
+  margin: 0 !important;
+  overflow: hidden;
+}
 
 .why-side-toggle {
   position: absolute;
@@ -708,4 +734,57 @@ p {
   gap: 10px;
   flex-wrap: wrap;
   line-height: 1.55;
+}
+
+/* =========================================
+   Step Entry Animation (staggered on load)
+   ========================================= */
+@keyframes step-entry {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.steps-list .step-item:nth-child(1), .steps-list .step:nth-child(1) { animation: step-entry 0.35s ease-out 0.05s both; }
+.steps-list .step-item:nth-child(2), .steps-list .step:nth-child(2) { animation: step-entry 0.35s ease-out 0.10s both; }
+.steps-list .step-item:nth-child(3), .steps-list .step:nth-child(3) { animation: step-entry 0.35s ease-out 0.15s both; }
+.steps-list .step-item:nth-child(4), .steps-list .step:nth-child(4) { animation: step-entry 0.35s ease-out 0.20s both; }
+.steps-list .step-item:nth-child(5), .steps-list .step:nth-child(5) { animation: step-entry 0.35s ease-out 0.25s both; }
+.steps-list .step-item:nth-child(6), .steps-list .step:nth-child(6) { animation: step-entry 0.35s ease-out 0.30s both; }
+.steps-list .step-item:nth-child(7), .steps-list .step:nth-child(7) { animation: step-entry 0.35s ease-out 0.35s both; }
+.steps-list .step-item:nth-child(8), .steps-list .step:nth-child(8) { animation: step-entry 0.35s ease-out 0.40s both; }
+
+/* =========================================
+   Step Completion Pop Animation
+   ========================================= */
+@keyframes step-complete-pop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.018); }
+  100% { transform: scale(1); }
+}
+.step.completed, .step-item.completed {
+  animation: step-complete-pop 0.35s ease-out;
+}
+
+/* =========================================
+   Copy Button Success State
+   ========================================= */
+.copy-btn--success {
+  background: rgba(26, 171, 82, 0.15) !important;
+  border-color: rgba(26, 171, 82, 0.45) !important;
+  color: var(--success) !important;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+}
+
+/* =========================================
+   Toggle Button Sliding Indicator
+   ========================================= */
+.toggle-row {
+  position: relative;
+}
+.toggle-btn {
+  transition: color 0.2s ease;
+  z-index: 1;
+}
+.toggle-btn.active {
+  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
