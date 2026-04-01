@@ -8,13 +8,7 @@
       step.addEventListener('click', function (e) {
         // Prevent toggling if user clicked an input field, button, or link
         var targetTag = e.target.tagName.toLowerCase();
-        if (
-          targetTag === 'input' ||
-          targetTag === 'textarea' ||
-          targetTag === 'button' ||
-          targetTag === 'a' ||
-          e.target.closest('button, a, input, textarea')
-        ) {
+        if (targetTag === 'input' || targetTag === 'textarea' || targetTag === 'button' || targetTag === 'a' || e.target.closest('button, a, input, textarea')) {
           return;
         }
         step.classList.toggle('completed');
@@ -35,18 +29,29 @@
   if (sections && whyPanel && whySideToggle) {
     var isCollapsed = false;
 
-    function applyWhyState() {
+    function applyWhyState(animate) {
       if (isCollapsed) {
         whyPanel.classList.add('why--collapsed');
         sections.classList.add('sections--why-collapsed');
-        whySideToggle.classList.add('why-side-toggle--visible');
-        if (whyHeaderIcon) whyHeaderIcon.textContent = '▶';
+        // Delay side toggle appearance until panel has mostly collapsed
+        if (animate) {
+          setTimeout(function () { whySideToggle.classList.add('why-side-toggle--visible'); }, 280);
+        } else {
+          whySideToggle.classList.add('why-side-toggle--visible');
+        }
+        if (whyHeaderIcon) {
+          whyHeaderIcon.textContent = '▼';
+          whyHeaderIcon.classList.add('why-icon--collapsed');
+        }
         if (whyHeaderLabel) whyHeaderLabel.textContent = 'Show';
       } else {
         whyPanel.classList.remove('why--collapsed');
         sections.classList.remove('sections--why-collapsed');
         whySideToggle.classList.remove('why-side-toggle--visible');
-        if (whyHeaderIcon) whyHeaderIcon.textContent = '▼'; // Down arrow when expanded
+        if (whyHeaderIcon) {
+          whyHeaderIcon.textContent = '▼';
+          whyHeaderIcon.classList.remove('why-icon--collapsed');
+        }
         if (whyHeaderLabel) whyHeaderLabel.textContent = 'Hide';
       }
     }
@@ -55,7 +60,7 @@
       whyHeaderToggle.addEventListener('click', function (e) {
         e.stopPropagation();
         isCollapsed = !isCollapsed;
-        applyWhyState();
+        applyWhyState(true);
       });
     }
 
@@ -63,12 +68,12 @@
       whySideToggle.addEventListener('click', function (e) {
         e.stopPropagation();
         isCollapsed = false; // Side toggle always expands
-        applyWhyState();
+        applyWhyState(true);
       });
     }
 
-    // Initialize state
-    applyWhyState();
+    // Initialize state (no animation on load)
+    applyWhyState(false);
   }
 
   /* =========================================================
@@ -163,9 +168,11 @@
           text,
           function () {
             if (labelEl) labelEl.textContent = 'Copied';
+            btn.classList.add('copy-btn--success');
             showStatus('Content copied to clipboard.');
             setTimeout(function () {
               if (labelEl) labelEl.textContent = originalLabel || 'Copy';
+              btn.classList.remove('copy-btn--success');
             }, 1200);
           },
           function () {
@@ -176,7 +183,7 @@
     });
   }
 
-  /* =========================================================
+    /* =========================================================
      VIEW TOGGLE (generic: Windows/macOS, GUI/CLI, etc.)
      ========================================================= */
   var viewButtons = document.querySelectorAll('.toggle-btn[data-view]');
