@@ -8,7 +8,13 @@
       step.addEventListener('click', function (e) {
         // Prevent toggling if user clicked an input field, button, or link
         var targetTag = e.target.tagName.toLowerCase();
-        if (targetTag === 'input' || targetTag === 'textarea' || targetTag === 'button' || targetTag === 'a' || e.target.closest('button, a, input, textarea')) {
+        if (
+          targetTag === 'input' ||
+          targetTag === 'textarea' ||
+          targetTag === 'button' ||
+          targetTag === 'a' ||
+          e.target.closest('button, a, input, textarea')
+        ) {
           return;
         }
         step.classList.toggle('completed');
@@ -166,6 +172,40 @@
             showStatus('Unable to copy automatically. Please copy manually.', true);
           }
         );
+      });
+    });
+  }
+
+  /* =========================================================
+     VIEW TOGGLE (GUI / CLI)
+     ========================================================= */
+  var viewButtons = document.querySelectorAll('.toggle-btn[data-view]');
+  var viewPanels  = document.querySelectorAll('[data-view-panel]');
+
+  if (viewButtons.length > 0 && viewPanels.length > 0) {
+    viewButtons.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+
+        var targetView = btn.getAttribute('data-view');
+        if (!targetView) return;
+
+        // Update button active state
+        viewButtons.forEach(function (b) {
+          b.classList.toggle('active', b === btn);
+          // Optional ARIA hints if you want them
+          b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+        });
+
+        // Show the matching panel, hide others
+        viewPanels.forEach(function (panel) {
+          var panelView = panel.getAttribute('data-view-panel');
+          if (panelView === targetView) {
+            panel.style.display = '';
+          } else {
+            panel.style.display = 'none';
+          }
+        });
       });
     });
   }
