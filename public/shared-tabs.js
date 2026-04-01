@@ -177,7 +177,7 @@
   }
 
   /* =========================================================
-     VIEW TOGGLE (GUI / CLI)
+     VIEW TOGGLE (generic: Windows/macOS, GUI/CLI, etc.)
      ========================================================= */
   var viewButtons = document.querySelectorAll('.toggle-btn[data-view]');
   var viewPanels  = document.querySelectorAll('[data-view-panel]');
@@ -192,12 +192,12 @@
 
         // Update button active state
         viewButtons.forEach(function (b) {
-          b.classList.toggle('active', b === btn);
-          // Optional ARIA hints if you want them
-          b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+          var isActive = b === btn;
+          b.classList.toggle('active', isActive);
+          b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
 
-        // Show the matching panel, hide others
+        // Show the matching panel, hide the others
         viewPanels.forEach(function (panel) {
           var panelView = panel.getAttribute('data-view-panel');
           if (panelView === targetView) {
