@@ -141,6 +141,17 @@ export interface ContactValue {
 }
 
 /**
+ * Milestone section
+ */
+export interface Milestone {
+  number: string;
+  category: string;
+  title: string;
+  description: string;
+  tags: string[];
+}
+
+/**
  * Social items
  */
 export interface Social {

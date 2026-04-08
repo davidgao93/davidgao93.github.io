@@ -1,39 +1,34 @@
-import classNames from 'classnames';
-import Image from 'next/image';
 import {FC, memo} from 'react';
 
-import {aboutData, SectionId} from '../../data/data';
-import Section from '../Layout/Section';
+import {SectionId} from '../../data/data';
 
 const About: FC = memo(() => {
-  const {profileImageSrc, description, aboutItems} = aboutData;
   return (
-    <Section className="bg-neutral-800" sectionId={SectionId.About}>
-      <div className={classNames('grid grid-cols-1 gap-y-4', {'md:grid-cols-4': !!profileImageSrc})}>
-        {!!profileImageSrc && (
-          <div className="col-span-1 flex justify-center md:justify-start">
-            <div className="relative h-24 w-24 overflow-hidden rounded-xl md:h-32 md:w-32">
-              <Image alt="about-me-image" className="h-full w-full object-cover" src={profileImageSrc} />
-            </div>
+    <section className="bg-surface py-24" id={SectionId.About}>
+      <div className="mx-auto max-w-7xl px-8">
+        <div className="grid grid-cols-1 gap-16 md:grid-cols-12">
+          <div className="md:col-span-4">
+            <h2 className="mb-4 font-label text-sm font-bold uppercase tracking-[0.2em] text-on-tertiary-fixed-variant">
+              Core Philosophy
+            </h2>
+            <h3 className="font-headline text-3xl font-extrabold leading-tight text-primary">
+              Data as the Architect of Insight.
+            </h3>
           </div>
-        )}
-        <div className={classNames('col-span-1 flex flex-col gap-y-6', {'md:col-span-3': !!profileImageSrc})}>
-          <div className="flex flex-col gap-y-2">
-            <h2 className="text-2xl font-bold text-white">About me</h2>
-            <p className="prose prose-sm text-gray-300 sm:prose-base">{description}</p>
+          <div className="md:col-span-8">
+            <p className="mb-8 font-body text-xl leading-relaxed text-on-surface-variant">
+              My work lives at the intersection of complex software architecture and instructional design. I specialize in
+              converting raw educational data into actionable insights through advanced software platforms.
+            </p>
+            <p className="font-body text-lg leading-relaxed text-on-surface-variant/80">
+              By leveraging Python-driven automation and AI integration, I transform traditional learning materials into
+              dynamic, responsive tools that evolve with the learner. Currently a Senior Education Developer at{' '}
+              <span className="font-medium text-primary">MicroStrategy</span>, based in Fairfax, VA.
+            </p>
           </div>
-          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {aboutItems.map(({label, text, Icon}, idx) => (
-              <li className="col-span-1 flex  items-start gap-x-2" key={idx}>
-                {Icon && <Icon className="h-5 w-5 text-white" />}
-                <span className="text-sm font-bold text-white">{label}:</span>
-                <span className=" text-sm text-gray-300">{text}</span>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
-    </Section>
+    </section>
   );
 });
 

@@ -35,9 +35,19 @@ html {
 body {
   position: relative;
   width: 100%;
-  color: #444444;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ubuntu, 'Helvetica Neue', sans-serif;
-  background-color: #fafafa;
+  color: #191c1e;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #f7f9fb;
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, #002446 0%, #1a3a5f 100%);
+}
+
+.glass-nav {
+  background: rgba(247, 249, 251, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 td,

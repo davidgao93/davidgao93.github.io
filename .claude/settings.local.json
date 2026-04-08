@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yarn build:*)",
+      "Bash(cmd /c \"yarn build 2>&1\")",
+      "Bash(cmd /c \"yarn build\")",
+      "Bash(where node:*)",
+      "Bash(where npx:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node \"C:\\\\Users\\\\yugao\\\\davidgao93.github.io\\\\node_modules\\\\typescript\\\\bin\\\\tsc\" --noEmit --project \"C:\\\\Users\\\\yugao\\\\davidgao93.github.io\\\\tsconfig.json\")",
+      "Bash(node \"C:\\\\Users\\\\yugao\\\\davidgao93.github.io\\\\node_modules\\\\.bin\\\\tsc\" --noEmit --project \"C:\\\\Users\\\\yugao\\\\davidgao93.github.io\\\\tsconfig.json\")",
+      "Bash(dir \"C:\\\\Users\\\\yugao\\\\davidgao93.github.io\\\\node_modules\\\\.bin\\\\tsc*\")"
+    ]
+  }
+}

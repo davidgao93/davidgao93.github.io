@@ -1,6 +1,5 @@
 import {
   AcademicCapIcon,
-  ArrowDownTrayIcon,
   BuildingOffice2Icon,
   CalendarIcon,
   FlagIcon,
@@ -12,11 +11,9 @@ import GithubIcon from '../components/Icon/GithubIcon';
 import LinkedInIcon from '../components/Icon/LinkedInIcon';
 import StackOverflowIcon from '../components/Icon/StackOverflowIcon';
 import heroImage from '../images/header-background.webp';
-import porfolioImage1 from '../images/portfolio/port1.jpg';
-import porfolioImage3 from '../images/portfolio/port3.png';
-import porfolioImage4 from '../images/portfolio/port4.png';
-import porfolioImage5 from '../images/portfolio/port5.png';
-import porfolioImage6 from '../images/portfolio/port6.png';
+import porfolioImage1 from '../images/portfolio/video_site.png';
+import porfolioImage3 from '../images/portfolio/port8.png';
+import porfolioImage5 from '../images/portfolio/idleology.png';
 import porfolioImage2 from '../images/portfolio/portfolio2.png';
 import profilepic from '../images/profilepic.jpg';
 import testimonialImage from '../images/testimonial.webp';
@@ -25,6 +22,7 @@ import {
   ContactSection,
   Hero,
   HomepageMeta,
+  Milestone,
   PortfolioItem,
   SkillGroup,
   Social,
@@ -44,13 +42,14 @@ export const homePageMeta: HomepageMeta = {
  * Section definition
  */
 export const SectionId = {
-  Hero: 'hero',
+  Hero: 'home',
   About: 'about',
-  Portfolio: 'portfolio',
-  Resume: 'resume',
+  Portfolio: 'projects',
+  Resume: 'experience',
   Skills: 'skills',
   Stats: 'stats',
   Testimonials: 'testimonials',
+  Contact: 'contact',
 } as const;
 
 export type SectionId = (typeof SectionId)[keyof typeof SectionId];
@@ -60,27 +59,24 @@ export type SectionId = (typeof SectionId)[keyof typeof SectionId];
  */
 export const heroData: Hero = {
   imageSrc: heroImage,
-  name: `I'm David Gao.`,
+  name: `Yuan Gao (David)`,
   description: (
     <>
-      <p className="prose-sm text-stone-200 sm:prose-base lg:prose-lg">
-        I'm a Virginia based <strong className="text-stone-100">Curriculum Developer</strong>, currently working
-        at <strong className="text-stone-100">MicroStrategy</strong> helping build a comprehensive, modular, and robust
-        MicroStrategy SDK curriculum.
-      </p>
-      <p className="prose-sm text-stone-200 sm:prose-base lg:prose-lg">
-        In my free time time, you can catch me on the <strong className="text-stone-100">golf course</strong>,
-        cooking a <strong className="text-stone-100">homemade meal</strong>, or exploring beautiful{' '}
-        <strong className="text-stone-100">Shenendoah</strong>.
+      <p className="text-primary-fixed-dim text-lg md:text-xl max-w-xl leading-relaxed">
+        Crafting high-end digital learning ecosystems where data intelligence meets pedagogical excellence.
       </p>
     </>
   ),
   actions: [
     {
-      href: 'https://cdn.discordapp.com/attachments/866729661123133500/1271227892726104064/DG_Resume_2024.pdf?ex=66b692bb&is=66b5413b&hm=2e257cc159babea4c5bcd1b1aa1a67b7139e8aef1374ba617e09470aa23ff3cc&',
-      text: 'Resume',
+      href: `/#${SectionId.Portfolio}`,
+      text: 'Explore Projects',
       primary: true,
-      Icon: ArrowDownTrayIcon,
+    },
+    {
+      href: `/#${SectionId.Resume}`,
+      text: 'View Experience',
+      primary: false,
     },
   ],
 };
@@ -181,46 +177,31 @@ export const skills: SkillGroup[] = [
  */
 export const portfolioItems: PortfolioItem[] = [
   {
-    title: 'MicroStrategy AI for Business Users',
-    description: 'Free introductory MicroStrategy AI Course',
+    title: 'Strategy AI for Business Users',
+    description: 'Free introductory Strategy AI Course',
     url: 'https://www.microstrategy.com/education/ai-for-business-users-getting-started',
     image: porfolioImage1,
   },
   {
-    title: 'MicroStrategy Tutorials',
-    description: 'MicroStrategy Video Tutorials',
+    title: 'Strategy Tutorials',
+    description: 'Strategy Video Tutorials for various aspects of the product',
     url: 'https://community.microstrategy.com/s/tutorials?language=en_US',
     image: porfolioImage2,
   },
   {
-    title: 'EDU Autograder',
-    description: 'Autograding solution for MicroStrategy Certifications',
+    title: 'EDU Cloud Manager',
+    description: 'Full in-house solution for Strategy Environments and Automated Certification Grading',
     url: 'https://github.com/davidgao93/',
     image: porfolioImage3,
   },
   {
-    title: 'NW Bot',
-    description: 'A fishing bot to teach myself Pyautogui and GUI design, forked from Siterizer',
-    url: 'https://github.com/davidgao93/new-world-fishing-bot',
-    image: porfolioImage4,
-  },
-  {
-    title: 'KenCoin',
-    description: 'A digital Discord bot that tracks virtual currency based on one of my friends, KenCoin for short.',
-    url: 'https://github.com/davidgao93/KenCoin',
+    title: 'Idleology',
+    description: 'A digital Discord bot that acts as a dungeon-master for an idle RPG game I designed and created called Idleology.',
+    url: 'https://github.com/davidgao93/Idleology',
     image: porfolioImage5,
-  },
-  {
-    title: 'Rufftop Agility',
-    description: 'My first foray into game automation using Java and an ancient game known as RuneScape',
-    url: 'https://github.com/davidgao93/rufftop-agility',
-    image: porfolioImage6,
   },
 ];
 
-/**
- * Resume section -- TODO: Standardize resume contact format or offer MDX
- */
 export const education: TimelineItem[] = [
   {
     date: 'Oct 2016',
@@ -271,6 +252,36 @@ export const experience: TimelineItem[] = [
 		updates to ensure client satisfaction and operational continuity.
       </p>
     ),
+  },
+];
+
+/**
+ * Professional milestones
+ */
+export const milestones: Milestone[] = [
+  {
+    number: '01',
+    category: 'Automation Excellence',
+    title: 'Certification Grading Automation',
+    description:
+      'Spearheaded the development of a Python-based API system that automates the grading of certification assessments. This implementation eliminated manual bottlenecks and recovered over 1,000+ hours of staff time annually.',
+    tags: ['Python', 'REST API'],
+  },
+  {
+    number: '02',
+    category: 'Infrastructure',
+    title: 'Internal Education Tooling',
+    description:
+      'Coded and deployed comprehensive internal tools including a Cloud Instance Management platform for lab environments and a proprietary synthetic data platform for large-scale training simulations.',
+    tags: ['AWS', 'EKS', 'Docker'],
+  },
+  {
+    number: '03',
+    category: 'AI Integration',
+    title: 'AI-Driven Feedback Reporting',
+    description:
+      'Developed a state-of-the-art feedback engine utilizing GPT-4o to generate hyper-personalized performance reports for learners, bridging the gap between automated assessment and qualitative mentorship.',
+    tags: ['GPT-4o', 'LLM Ops'],
   },
 ];
 

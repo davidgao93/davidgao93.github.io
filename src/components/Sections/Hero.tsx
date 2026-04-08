@@ -1,57 +1,56 @@
-import {ChevronDownIcon} from '@heroicons/react/24/outline';
-import classNames from 'classnames';
-import Image from 'next/image';
 import {FC, memo} from 'react';
 
 import {heroData, SectionId} from '../../data/data';
-import Section from '../Layout/Section';
-import Socials from '../Socials';
 
 const Hero: FC = memo(() => {
-  const {imageSrc, name, description, actions} = heroData;
+  const {description, actions} = heroData;
 
   return (
-    <Section noPadding sectionId={SectionId.Hero}>
-      <div className="relative flex h-screen w-full items-center justify-center">
-        <Image
-          alt={`${name}-image`}
-          className="absolute z-0 h-full w-full object-cover"
-          placeholder="blur"
-          priority
-          src={imageSrc}
-        />
-        <div className="z-10  max-w-screen-lg px-4 lg:px-0">
-          <div className="flex flex-col items-center gap-y-6 rounded-xl bg-gray-800/40 p-6 text-center shadow-lg backdrop-blur-sm">
-            <h1 className="text-4xl font-bold text-white sm:text-5xl lg:text-7xl">{name}</h1>
+    <section className="hero-gradient relative flex min-h-screen items-center overflow-hidden pt-20" id={SectionId.Hero}>
+      <div className="absolute right-0 top-0 -mr-20 -mt-20 h-96 w-96 rounded-full bg-tertiary-fixed/5 blur-3xl" />
+      <div className="absolute bottom-0 left-0 -mb-20 -ml-20 h-96 w-96 rounded-full bg-secondary-fixed/5 blur-3xl" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-8 py-24">
+        <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-12">
+          <div className="md:col-span-7">
+            <span className="mb-6 inline-block rounded-full bg-tertiary-fixed px-4 py-1 font-label text-[10px] font-bold uppercase tracking-widest text-on-tertiary-fixed">
+              Education Developer &amp; Architect
+            </span>
+            <h1 className="mb-8 font-headline text-5xl font-extrabold leading-tight tracking-tighter text-white md:text-7xl">
+              Bridging Education <br />
+              &amp; <span className="text-tertiary-fixed-dim">Automation.</span>
+            </h1>
             {description}
-            <div className="flex gap-x-4 text-neutral-100">
-              <Socials />
-            </div>
-            <div className="flex w-full justify-center gap-x-4">
-              {actions.map(({href, text, primary, Icon}) => (
+            <div className="mt-10 flex flex-wrap gap-4">
+              {actions.map(({href, text, primary}) => (
                 <a
-                  className={classNames(
-                    'flex gap-x-2 rounded-full border-2 bg-none px-4 py-2 text-sm font-medium text-white ring-offset-gray-700/80 hover:bg-gray-700/80 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-base',
-                    primary ? 'border-orange-500 ring-orange-500' : 'border-white ring-white',
-                  )}
+                  className={
+                    primary
+                      ? 'rounded-lg bg-tertiary-fixed px-8 py-4 font-headline text-sm font-bold text-on-tertiary-fixed transition-transform hover:scale-[0.98]'
+                      : 'rounded-lg border border-outline-variant/30 px-8 py-4 font-headline text-sm font-bold text-white transition-colors hover:bg-white/10'
+                  }
                   href={href}
                   key={text}>
                   {text}
-                  {Icon && <Icon className="h-5 w-5 text-white sm:h-6 sm:w-6" />}
                 </a>
               ))}
             </div>
           </div>
-        </div>
-        <div className="absolute inset-x-0 bottom-6 flex justify-center">
-          <a
-            className="rounded-full bg-white p-1 ring-white ring-offset-2 ring-offset-gray-700/80 focus:outline-none focus:ring-2 sm:p-2"
-            href={`/#${SectionId.About}`}>
-            <ChevronDownIcon className="h-5 w-5 bg-transparent sm:h-6 sm:w-6" />
-          </a>
+          <div className="relative hidden md:col-span-5 md:block">
+            <div className="relative aspect-square overflow-hidden rounded-3xl bg-surface-container-highest/10">
+              <div className="absolute inset-8 rounded-2xl border-[20px] border-tertiary-fixed/20" />
+              <div className="flex h-full items-center justify-center">
+                <div className="text-center">
+                  <div className="mb-4 font-headline text-8xl font-extrabold text-tertiary-fixed/30">DG</div>
+                  <div className="font-label text-xs font-bold uppercase tracking-widest text-primary-fixed-dim/50">
+                    Senior Education Developer
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </Section>
+    </section>
   );
 });
 
