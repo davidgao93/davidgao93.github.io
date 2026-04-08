@@ -90,11 +90,11 @@ export const aboutData: About = {
   and just about anything to do with cute critters.`,
   aboutItems: [
     {label: 'Location', text: 'Fairfax, VA', Icon: MapIcon},
-    {label: 'Age', text: '31', Icon: CalendarIcon},
+    {label: 'Age', text: '32', Icon: CalendarIcon},
     {label: 'Nationality', text: 'USA / Canada', Icon: FlagIcon},
     {label: 'Interests', text: 'Golf, Cooking, Modern Family', Icon: SparklesIcon},
     {label: 'Study', text: 'University of Waterloo', Icon: AcademicCapIcon},
-    {label: 'Employment', text: 'MicroStrategy', Icon: BuildingOffice2Icon},
+    {label: 'Employment', text: 'Strategy', Icon: BuildingOffice2Icon},
   ],
 };
 
@@ -161,11 +161,11 @@ export const skills: SkillGroup[] = [
         level: 10,
       },
       {
-        name: 'Java',
-        level: 6,
+        name: 'SQL',
+        level: 8,
       },
       {
-        name: 'AI',
+        name: 'AWS / Docker / Kubernetes',
         level: 7,
       },
     ],
@@ -213,43 +213,66 @@ export const education: TimelineItem[] = [
 
 export const experience: TimelineItem[] = [
   {
-    date: 'Dec 2020 - Present',
-    location: 'MicroStrategy',
+    date: 'Feb 2023 - Present',
+    location: 'Strategy',
     title: 'Senior Curriculum Developer',
     content: (
       <p>
-		  At MicroStrategy, I have excelled as a Senior Curriculum Developer, 
-		  where I have pioneered the automation of certification grading by integrating APIs 
-		  with Python and developing user-friendly GUI tools, 
-		  significantly improving grading efficiency and accuracy. 
-		  My efforts resulted in the rapid grading of hundreds of certifications within the first month, 
-		  with an impressive 95% accuracy rate, while also enabling the automatic collection of data to refine 
-		  future certification processes. Additionally, I have crafted comprehensive SDK course materials, 
-		  designed cutting-edge AI training programs, and produced a series 
-		  of professional training videos using advanced editing tools such as Sony Vegas and Adobe Premiere. 
-		  My role also involves creating and leading internal training on MicroStrategy AI products, 
-		  including LLMs and cloud transition strategies, as well as transforming complex textbook content 
-		  into dynamic e-learning modules with Articulate Storyline, 
-		  enhancing the overall student experience. 
-		  I authored extensive course materials for various MicroStrategy SDKs and seamlessly integrated them into Adobe LMS, 
-		  further contributing to the robust educational offerings of the company.
-	  </p>
+        Spearheaded automation of Strategy certification grading through Python- and API-driven workflows, achieving 99% accuracy
+        vs. manual grading and saving 1,000+ instructor hours. Built internal education tools including a cloud instance and
+        certification management system and a synthetic data generation platform (Python/Flask, SQLite/PostgreSQL, Bootstrap 5,
+        Streamlit). Leveraged GPT-4o to auto-generate personalized feedback reports for hundreds of test takers, doubling
+        subsequent certification pass rates. Designed 20+ internal AI training modules covering Strategy Auto, LLMs, OpenAI,
+        prompt engineering, Mosaic, Bitcoin, and cloud transition strategies. Developed Articulate Storyline and Rise courses
+        on AWS, EKS, and containerization. Authored SDK course materials for REST API, Embed SDK (JavaScript), and Python SDK.
+        Produced 30+ training videos using Sony Vegas, Adobe Premiere, CapCut, OBS Studio, Nvidia Broadcast, Adobe Podcast,
+        and Loom, with voice-over synthesis via Google Cloud.
+      </p>
+    ),
+  },
+  {
+    date: 'Dec 2020 - Feb 2023',
+    location: 'Strategy',
+    title: 'Curriculum Developer',
+    content: (
+      <p>
+        Authored comprehensive course materials for Strategy SDKs, covering REST API, Embed SDK (JavaScript), and Python SDK.
+      </p>
     ),
   },
   {
     date: 'Jul 2016 - Dec 2020',
     location: 'Remote',
-    title: 'Software Developer',
+    title: 'Freelance Software Developer',
     content: (
       <p>
-		I have developed and deployed customized scripting solutions using Python and AutoHotkey (AHK) to optimize client operations, 
-		focusing on SQL database management, data sorting, and analysis to promote business insights and efficiency. 
-		My expertise in streamlining client workflows is demonstrated through the creation of sophisticated GUI automation 
-		scripts with PyAutoGUI and AHK, which have significantly saved time and minimized human error by automating repetitive tasks. 
-		Additionally, I have engineered robust Docker containerized applications to ensure consistent execution across various operating systems, 
-		effectively addressing compatibility issues. Complementing my technical skills, I provide exceptional client support in 
-		English, Mandarin Chinese, and French, offering real-time troubleshooting and 
-		updates to ensure client satisfaction and operational continuity.
+        Developed and deployed tailored scripting solutions in Python and AutoHotkey (AHK) to enhance client operations,
+        specializing in SQL database management, data sorting, and analysis to drive business insights and efficiency.
+      </p>
+    ),
+  },
+  {
+    date: 'Jun 2014 - Sep 2014',
+    location: 'NCR Canada',
+    title: 'Software Tester',
+    content: (
+      <p>
+        Orchestrated in-depth software testing initiatives using HP Quality Center, leading the comparison between an in-house
+        Java tool and a third-party solution, resulting in validation of the superior in-house tool and saving the company
+        $20,000 CAD in licensing fees.
+      </p>
+    ),
+  },
+  {
+    date: 'Jun 2013 - Dec 2013',
+    location: 'Rogers Inc.',
+    title: 'Support Analyst',
+    content: (
+      <p>
+        Enhanced system operations by rewriting critical documentation for provisioning, standardizing best practices, resolving
+        common database errors, automating RESTful API interactions with SoapUI for network provisioning, and developing Bash
+        scripts that transitioned from manual execution to scheduled daily crontabs, leading to a transition from help desk to
+        the provisioning team.
       </p>
     ),
   },
@@ -264,7 +287,7 @@ export const milestones: Milestone[] = [
     category: 'Automation Excellence',
     title: 'Certification Grading Automation',
     description:
-      'Spearheaded the development of a Python-based API system that automates the grading of certification assessments. This implementation eliminated manual bottlenecks and recovered over 1,000+ hours of staff time annually.',
+      'Spearheaded the development of a Python- and API-driven workflow that automates certification grading with 99% accuracy vs. manual grading. This implementation eliminated manual bottlenecks and recovered 1,000+ instructor hours annually.',
     tags: ['Python', 'REST API'],
   },
   {
@@ -280,7 +303,7 @@ export const milestones: Milestone[] = [
     category: 'AI Integration',
     title: 'AI-Driven Feedback Reporting',
     description:
-      'Developed a state-of-the-art feedback engine utilizing GPT-4o to generate hyper-personalized performance reports for learners, bridging the gap between automated assessment and qualitative mentorship.',
+      'Built a custom workflow leveraging GPT-4o to automatically collect results data and generate personalized feedback reports for hundreds of test takers, improving study strategies and doubling subsequent certification pass rates.',
     tags: ['GPT-4o', 'LLM Ops'],
   },
 ];
