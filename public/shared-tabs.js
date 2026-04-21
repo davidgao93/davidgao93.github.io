@@ -463,89 +463,138 @@
   }());
 
   /* =========================================================
-     SCREENSHOT LIGHTBOX
+     SCREENSHOT POPOVER
      ========================================================= */
   (function () {
-    if (!document.querySelector('.screenshot-btn')) return;
+    var btns = document.querySelectorAll('.screenshot-btn');
+    if (!btns.length) return;
 
-    // Inject overlay HTML once
-    if (!document.getElementById('screenshot-overlay')) {
-      var overlayEl = document.createElement('div');
-      overlayEl.id = 'screenshot-overlay';
-      overlayEl.setAttribute('role', 'dialog');
-      overlayEl.setAttribute('aria-modal', 'true');
-      overlayEl.setAttribute('aria-label', 'Screenshot viewer');
-      overlayEl.innerHTML =
-        '<div id="screenshot-modal">' +
-          '<div id="screenshot-toolbar">' +
-            '<button id="screenshot-close" type="button" aria-label="Close screenshot">\u2715</button>' +
-            '<a id="screenshot-new-tab" href="#" target="_blank" rel="noopener noreferrer" title="Open image in new tab">' +
-              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
-              ' Open in new tab' +
-            '</a>' +
-          '</div>' +
-          '<img id="screenshot-img" src="" alt="" />' +
-          '<div id="screenshot-caption"></div>' +
-        '</div>';
-      document.body.appendChild(overlayEl);
-    }
+    var SVG_IMAGE =
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"' +
+      ' stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>' +
+      '<circle cx="8.5" cy="8.5" r="1.5"></circle>' +
+      '<polyline points="21 15 16 10 5 21"></polyline>' +
+      '</svg>';
 
-    var overlay    = document.getElementById('screenshot-overlay');
-    var modal      = document.getElementById('screenshot-modal');
-    var img        = document.getElementById('screenshot-img');
-    var caption    = document.getElementById('screenshot-caption');
-    var closeBtn   = document.getElementById('screenshot-close');
-    var newTabLink = document.getElementById('screenshot-new-tab');
+    var SVG_EXTERNAL =
+      '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"' +
+      ' stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>' +
+      '<polyline points="15 3 21 3 21 9"></polyline>' +
+      '<line x1="10" y1="14" x2="21" y2="3"></line>' +
+      '</svg>';
 
-    function openScreenshot(src, cap) {
-      img.src = src;
+    btns.forEach(function (btn) {
+      var src = btn.dataset.src || '';
+      var cap = btn.dataset.caption || '';
+      if (!src) return;
+
+      /* Replace emoji label with clean SVG icon */
+      btn.innerHTML = SVG_IMAGE + ' Preview';
+
+      /* Wrap button in a relative-positioned anchor span */
+      var anchor = document.createElement('span');
+      anchor.className = 'screenshot-anchor';
+      btn.parentNode.insertBefore(anchor, btn);
+      anchor.appendChild(btn);
+
+      /* Build popover card */
+      var popover = document.createElement('div');
+      popover.className = 'screenshot-popover';
+      popover.setAttribute('role', 'tooltip');
+
+      var img = document.createElement('img');
+      img.className = 'screenshot-popover-img';
       img.alt = cap || 'Screenshot';
-      caption.textContent = cap || '';
-      if (newTabLink) newTabLink.href = src;
-      overlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
+      /* src set lazily on first hover */
+      popover.appendChild(img);
 
-      /* Centering fix: if position:fixed is spanning the full document
-         (e.g. inside a CSS-transform ancestor or RISE iframe), the overlay
-         height will exceed the viewport. Detect this and reposition manually. */
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          var overlayH = overlay.offsetHeight;
-          var viewH    = window.innerHeight;
-          if (overlayH > viewH + 10) {
-            var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-            var modalH  = modal.offsetHeight;
-            overlay.style.alignItems  = 'flex-start';
-            modal.style.marginTop = Math.max(16, scrollY + (viewH - modalH) / 2) + 'px';
-          }
-        });
-      });
-    }
+      if (cap) {
+        var capEl = document.createElement('div');
+        capEl.className = 'screenshot-popover-cap';
+        capEl.textContent = cap;
+        popover.appendChild(capEl);
+      }
 
-    function closeScreenshot() {
-      overlay.classList.remove('active');
-      overlay.style.alignItems = '';
-      if (modal) modal.style.marginTop = '';
-      img.src = '';
-      if (newTabLink) newTabLink.href = '#';
-      document.body.style.overflow = '';
-    }
+      var foot = document.createElement('div');
+      foot.className = 'screenshot-popover-foot';
+      var link = document.createElement('a');
+      link.className = 'screenshot-newtab-link';
+      link.href = src;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.innerHTML = 'Open in new tab ' + SVG_EXTERNAL;
+      foot.appendChild(link);
+      popover.appendChild(foot);
+      anchor.appendChild(popover);
 
-    document.querySelectorAll('.screenshot-btn').forEach(function (btn) {
+      var imgLoaded = false;
+      var hideTimer = null;
+
+      function show() {
+        /* Lazy-load image on first hover */
+        if (!imgLoaded) { img.src = src; imgLoaded = true; }
+        clearTimeout(hideTimer);
+
+        var ar  = anchor.getBoundingClientRect();
+        var pw  = popover.offsetWidth  || 380;
+        var ph  = popover.offsetHeight || 316; /* img 232 + cap ~30 + footer ~34 + padding 20 */
+        var vw  = window.innerWidth;
+
+        /* ── Vertical: above by default, flip below if near top of viewport ── */
+        var goBelow = ar.top < ph + 16;
+        if (goBelow) {
+          popover.style.top    = 'calc(100% + 10px)';
+          popover.style.bottom = 'auto';
+        } else {
+          popover.style.bottom = 'calc(100% + 10px)';
+          popover.style.top    = 'auto';
+        }
+
+        /* ── Horizontal: center on button, shift if near viewport edges ── */
+        var centerOffset = (anchor.offsetWidth - pw) / 2;
+        var projLeft     = ar.left + centerOffset;
+        var projRight    = projLeft + pw;
+
+        if (projLeft < 8) {
+          popover.style.left  = '0';
+          popover.style.right = 'auto';
+        } else if (projRight > vw - 8) {
+          popover.style.right = '0';
+          popover.style.left  = 'auto';
+        } else {
+          popover.style.left  = centerOffset + 'px';
+          popover.style.right = 'auto';
+        }
+
+        /* ── Animate in: slide from direction of origin ── */
+        var fromY = goBelow ? '-6px' : '6px';
+        popover.style.transform    = 'translateY(' + fromY + ')';
+        popover.style.opacity      = '0';
+        void popover.offsetHeight; /* force reflow so transition fires */
+        popover.style.transform    = 'translateY(0)';
+        popover.style.opacity      = '1';
+        popover.style.pointerEvents = 'auto';
+      }
+
+      function scheduleHide() {
+        hideTimer = setTimeout(function () {
+          popover.style.opacity      = '0';
+          popover.style.pointerEvents = 'none';
+        }, 120);
+      }
+
+      btn.addEventListener('mouseenter', show);
+      btn.addEventListener('mouseleave', scheduleHide);
+      popover.addEventListener('mouseenter', function () { clearTimeout(hideTimer); });
+      popover.addEventListener('mouseleave', scheduleHide);
+
+      /* Touch / keyboard fallback: click opens image directly in new tab */
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
-        openScreenshot(btn.dataset.src || '', btn.dataset.caption || '');
+        window.open(src, '_blank', 'noopener,noreferrer');
       });
-    });
-
-    if (closeBtn) closeBtn.addEventListener('click', closeScreenshot);
-
-    overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) closeScreenshot();
-    });
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && overlay.classList.contains('active')) closeScreenshot();
     });
   }());
 
