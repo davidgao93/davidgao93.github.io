@@ -462,4 +462,63 @@
     initInputPersistence();
   }());
 
+  /* =========================================================
+     SCREENSHOT LIGHTBOX
+     ========================================================= */
+  (function () {
+    if (!document.querySelector('.screenshot-btn')) return;
+
+    // Inject overlay HTML once
+    if (!document.getElementById('screenshot-overlay')) {
+      var overlayEl = document.createElement('div');
+      overlayEl.id = 'screenshot-overlay';
+      overlayEl.setAttribute('role', 'dialog');
+      overlayEl.setAttribute('aria-modal', 'true');
+      overlayEl.setAttribute('aria-label', 'Screenshot viewer');
+      overlayEl.innerHTML =
+        '<div id="screenshot-modal">' +
+          '<button id="screenshot-close" type="button" aria-label="Close screenshot">\u2715</button>' +
+          '<img id="screenshot-img" src="" alt="" />' +
+          '<div id="screenshot-caption"></div>' +
+        '</div>';
+      document.body.appendChild(overlayEl);
+    }
+
+    var overlay  = document.getElementById('screenshot-overlay');
+    var img      = document.getElementById('screenshot-img');
+    var caption  = document.getElementById('screenshot-caption');
+    var closeBtn = document.getElementById('screenshot-close');
+
+    function openScreenshot(src, cap) {
+      img.src = src;
+      img.alt = cap || 'Screenshot';
+      caption.textContent = cap || '';
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeScreenshot() {
+      overlay.classList.remove('active');
+      img.src = '';
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.screenshot-btn').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        openScreenshot(btn.dataset.src || '', btn.dataset.caption || '');
+      });
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeScreenshot);
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeScreenshot();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('active')) closeScreenshot();
+    });
+  }());
+
 })();
