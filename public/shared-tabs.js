@@ -539,7 +539,7 @@
 
         var ar  = anchor.getBoundingClientRect();
         var pw  = popover.offsetWidth  || 380;
-        var ph  = popover.offsetHeight || 316; /* img 232 + cap ~30 + footer ~34 + padding 20 */
+        var ph  = popover.offsetHeight || 548; /* img 464 + cap ~30 + footer ~34 + padding 20 */
         var vw  = window.innerWidth;
 
         /* ── Vertical: above by default, flip below if near top of viewport ── */
