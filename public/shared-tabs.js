@@ -477,29 +477,57 @@
       overlayEl.setAttribute('aria-label', 'Screenshot viewer');
       overlayEl.innerHTML =
         '<div id="screenshot-modal">' +
-          '<button id="screenshot-close" type="button" aria-label="Close screenshot">\u2715</button>' +
+          '<div id="screenshot-toolbar">' +
+            '<button id="screenshot-close" type="button" aria-label="Close screenshot">\u2715</button>' +
+            '<a id="screenshot-new-tab" href="#" target="_blank" rel="noopener noreferrer" title="Open image in new tab">' +
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+              ' Open in new tab' +
+            '</a>' +
+          '</div>' +
           '<img id="screenshot-img" src="" alt="" />' +
           '<div id="screenshot-caption"></div>' +
         '</div>';
       document.body.appendChild(overlayEl);
     }
 
-    var overlay  = document.getElementById('screenshot-overlay');
-    var img      = document.getElementById('screenshot-img');
-    var caption  = document.getElementById('screenshot-caption');
-    var closeBtn = document.getElementById('screenshot-close');
+    var overlay    = document.getElementById('screenshot-overlay');
+    var modal      = document.getElementById('screenshot-modal');
+    var img        = document.getElementById('screenshot-img');
+    var caption    = document.getElementById('screenshot-caption');
+    var closeBtn   = document.getElementById('screenshot-close');
+    var newTabLink = document.getElementById('screenshot-new-tab');
 
     function openScreenshot(src, cap) {
       img.src = src;
       img.alt = cap || 'Screenshot';
       caption.textContent = cap || '';
+      if (newTabLink) newTabLink.href = src;
       overlay.classList.add('active');
       document.body.style.overflow = 'hidden';
+
+      /* Centering fix: if position:fixed is spanning the full document
+         (e.g. inside a CSS-transform ancestor or RISE iframe), the overlay
+         height will exceed the viewport. Detect this and reposition manually. */
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          var overlayH = overlay.offsetHeight;
+          var viewH    = window.innerHeight;
+          if (overlayH > viewH + 10) {
+            var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+            var modalH  = modal.offsetHeight;
+            overlay.style.alignItems  = 'flex-start';
+            modal.style.marginTop = Math.max(16, scrollY + (viewH - modalH) / 2) + 'px';
+          }
+        });
+      });
     }
 
     function closeScreenshot() {
       overlay.classList.remove('active');
+      overlay.style.alignItems = '';
+      if (modal) modal.style.marginTop = '';
       img.src = '';
+      if (newTabLink) newTabLink.href = '#';
       document.body.style.overflow = '';
     }
 
