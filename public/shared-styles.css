@@ -893,7 +893,7 @@ p {
 
 /* Popover card — always in DOM, hidden via opacity/pointer-events */
 .screenshot-popover {
-  position: absolute;
+  position: fixed;
   display: flex;
   flex-direction: column;
   gap: 8px;

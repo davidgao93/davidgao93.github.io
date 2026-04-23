@@ -527,7 +527,8 @@
       link.innerHTML = 'Open in new tab ' + SVG_EXTERNAL;
       foot.appendChild(link);
       popover.appendChild(foot);
-      anchor.appendChild(popover);
+      /* Append to body so the popover escapes all stacking contexts and overflow clips */
+      document.body.appendChild(popover);
 
       var imgLoaded = false;
       var hideTimer = null;
@@ -537,36 +538,25 @@
         if (!imgLoaded) { img.src = src; imgLoaded = true; }
         clearTimeout(hideTimer);
 
-        var ar  = anchor.getBoundingClientRect();
-        var pw  = popover.offsetWidth  || 380;
-        var ph  = popover.offsetHeight || 548; /* img 464 + cap ~30 + footer ~34 + padding 20 */
-        var vw  = window.innerWidth;
+        var ar = anchor.getBoundingClientRect();
+        var pw = 760;  /* matches CSS width */
+        var ph = 548;  /* img 464 + cap ~30 + footer ~34 + padding 20 */
+        var vw = window.innerWidth;
+        var vh = window.innerHeight;
 
         /* ── Vertical: above by default, flip below if near top of viewport ── */
-        var goBelow = ar.top < ph + 16;
-        if (goBelow) {
-          popover.style.top    = 'calc(100% + 10px)';
-          popover.style.bottom = 'auto';
-        } else {
-          popover.style.bottom = 'calc(100% + 10px)';
-          popover.style.top    = 'auto';
-        }
+        var goBelow  = ar.top < ph + 16;
+        var fixedTop = goBelow ? ar.bottom + 10 : ar.top - ph - 10;
+        fixedTop = Math.max(8, Math.min(fixedTop, vh - ph - 8));
 
-        /* ── Horizontal: center on button, shift if near viewport edges ── */
-        var centerOffset = (anchor.offsetWidth - pw) / 2;
-        var projLeft     = ar.left + centerOffset;
-        var projRight    = projLeft + pw;
+        /* ── Horizontal: center on button, clamp to viewport ── */
+        var fixedLeft = ar.left + (ar.width / 2) - (pw / 2);
+        fixedLeft = Math.max(8, Math.min(fixedLeft, vw - pw - 8));
 
-        if (projLeft < 8) {
-          popover.style.left  = '0';
-          popover.style.right = 'auto';
-        } else if (projRight > vw - 8) {
-          popover.style.right = '0';
-          popover.style.left  = 'auto';
-        } else {
-          popover.style.left  = centerOffset + 'px';
-          popover.style.right = 'auto';
-        }
+        popover.style.top    = fixedTop + 'px';
+        popover.style.left   = fixedLeft + 'px';
+        popover.style.bottom = 'auto';
+        popover.style.right  = 'auto';
 
         /* ── Animate in: slide from direction of origin ── */
         var fromY = goBelow ? '-6px' : '6px';
