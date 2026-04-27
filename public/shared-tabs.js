@@ -428,9 +428,9 @@
           saveStepStates();
           updateProgressBadge();
           updateAllDoneBanner();
-          if (step.classList.contains('completed')) {
-            scrollToNextStep(step);
-          }
+          // if (step.classList.contains('completed')) {
+          //   scrollToNextStep(step);
+          // }
         }, 0);
       });
     });
