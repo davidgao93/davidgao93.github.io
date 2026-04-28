@@ -123,6 +123,7 @@
       } else {
         expandWhyPanel(animate);
       }
+      updateEdgeChevron();
     }
 
     if (whyHeaderToggle) {
@@ -143,17 +144,60 @@
 
     /* Inject clickable edge strip on the right border of the steps panel */
     var stepsPanel = document.querySelector('.steps-panel, .steps');
+    var edgeChevron = null;
     if (stepsPanel) {
       var edgeToggle = document.createElement('div');
       edgeToggle.className = 'steps-edge-toggle';
-      edgeToggle.title = 'Hide "Why?" panel';
+      edgeToggle.setAttribute('role', 'button');
+      edgeToggle.setAttribute('tabindex', '0');
+      edgeToggle.setAttribute('aria-label', 'Hide "Why?" panel');
+
+      edgeChevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      edgeChevron.setAttribute('class', 'steps-edge-chevron');
+      edgeChevron.setAttribute('width', '10');
+      edgeChevron.setAttribute('height', '10');
+      edgeChevron.setAttribute('viewBox', '0 0 10 10');
+      edgeChevron.setAttribute('fill', 'none');
+      edgeChevron.setAttribute('stroke', 'currentColor');
+      edgeChevron.setAttribute('stroke-width', '2');
+      edgeChevron.setAttribute('stroke-linecap', 'round');
+      edgeChevron.setAttribute('stroke-linejoin', 'round');
+      edgeChevron.setAttribute('aria-hidden', 'true');
+      var chevronPoly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      chevronPoly.setAttribute('points', '3,2 7,5 3,8');
+      edgeChevron.appendChild(chevronPoly);
+
+      var edgeLabel = document.createElement('span');
+      edgeLabel.className = 'steps-edge-label';
+      edgeLabel.textContent = 'Why';
+
+      var edgeHandle = document.createElement('div');
+      edgeHandle.className = 'steps-edge-handle';
+      edgeHandle.appendChild(edgeChevron);
+      edgeHandle.appendChild(edgeLabel);
+
+      edgeToggle.appendChild(edgeHandle);
       stepsPanel.appendChild(edgeToggle);
+
       edgeToggle.addEventListener('click', function (e) {
         e.stopPropagation();
         isCollapsed = !isCollapsed;
-        edgeToggle.title = isCollapsed ? 'Show "Why?" panel' : 'Hide "Why?" panel';
+        edgeToggle.setAttribute('aria-label', isCollapsed ? 'Show "Why?" panel' : 'Hide "Why?" panel');
         applyWhyState(true);
       });
+
+      edgeToggle.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          edgeToggle.click();
+        }
+      });
+    }
+
+    function updateEdgeChevron() {
+      if (!edgeChevron) return;
+      /* pointing right (›) = panel visible, click to collapse; rotate 180° when collapsed to point left */
+      edgeChevron.style.transform = isCollapsed ? 'rotate(180deg)' : '';
     }
 
     // Initialize state (no animation on load)
