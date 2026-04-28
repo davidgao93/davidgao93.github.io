@@ -141,6 +141,21 @@
       });
     }
 
+    /* Inject clickable edge strip on the right border of the steps panel */
+    var stepsPanel = document.querySelector('.steps-panel, .steps');
+    if (stepsPanel) {
+      var edgeToggle = document.createElement('div');
+      edgeToggle.className = 'steps-edge-toggle';
+      edgeToggle.title = 'Hide "Why?" panel';
+      stepsPanel.appendChild(edgeToggle);
+      edgeToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        isCollapsed = !isCollapsed;
+        edgeToggle.title = isCollapsed ? 'Show "Why?" panel' : 'Hide "Why?" panel';
+        applyWhyState(true);
+      });
+    }
+
     // Initialize state (no animation on load)
     initWhyPanel();
     applyWhyState(false);
