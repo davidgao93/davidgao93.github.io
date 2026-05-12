@@ -1,18 +1,34 @@
 (function () {
   /* =========================================================
      STEP COMPLETION TOGGLING
+     Only the step-num circle acts as the toggle target so that
+     clicking text, code blocks, or copy buttons never accidentally
+     marks / unmarks a step.
      ========================================================= */
   var steps = document.querySelectorAll('.step, .step-item');
   if (steps && steps.length > 0) {
     steps.forEach(function (step) {
-      step.addEventListener('click', function (e) {
-        // Prevent toggling if user clicked an input field, button, or link
-        var targetTag = e.target.tagName.toLowerCase();
-        if (targetTag === 'input' || targetTag === 'textarea' || targetTag === 'button' || targetTag === 'a' || e.target.closest('button, a, input, textarea')) {
-          return;
-        }
-        step.classList.toggle('completed');
-      });
+      var numEl = step.querySelector('.step-num');
+      if (numEl) {
+        numEl.setAttribute('role', 'checkbox');
+        numEl.setAttribute('tabindex', '0');
+        numEl.setAttribute('aria-checked', 'false');
+        numEl.title = 'Mark complete';
+
+        numEl.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var nowComplete = step.classList.toggle('completed');
+          numEl.setAttribute('aria-checked', nowComplete ? 'true' : 'false');
+          numEl.title = nowComplete ? 'Mark incomplete' : 'Mark complete';
+        });
+
+        numEl.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            numEl.click();
+          }
+        });
+      }
     });
   }
 
@@ -461,7 +477,13 @@
       var saved = lsGet(stepsKey);
       if (!Array.isArray(saved)) return;
       saved.forEach(function (i) {
-        if (stepEls[i]) stepEls[i].classList.add('completed');
+        if (!stepEls[i]) return;
+        stepEls[i].classList.add('completed');
+        var numEl = stepEls[i].querySelector('.step-num');
+        if (numEl) {
+          numEl.setAttribute('aria-checked', 'true');
+          numEl.title = 'Mark incomplete';
+        }
       });
     }
 
@@ -478,20 +500,17 @@
     }
 
     stepEls.forEach(function (step) {
-      step.addEventListener('click', function (e) {
-        var tag = e.target.tagName.toLowerCase();
-        if (tag === 'input' || tag === 'textarea' || tag === 'button' || tag === 'a' ||
-            e.target.closest('button, a, input, textarea')) return;
-        /* Run after the primary toggle listener (same tick) has applied the class */
-        setTimeout(function () {
-          saveStepStates();
-          updateProgressBadge();
-          updateAllDoneBanner();
-          // if (step.classList.contains('completed')) {
-          //   scrollToNextStep(step);
-          // }
-        }, 0);
-      });
+      var numEl = step.querySelector('.step-num');
+      if (numEl) {
+        numEl.addEventListener('click', function () {
+          /* Run after the primary toggle listener (same tick) has applied the class */
+          setTimeout(function () {
+            saveStepStates();
+            updateProgressBadge();
+            updateAllDoneBanner();
+          }, 0);
+        });
+      }
     });
 
     /* ---------- INPUT PERSISTENCE ---------- */

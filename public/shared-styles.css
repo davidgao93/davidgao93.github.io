@@ -369,11 +369,13 @@ p {
   border-bottom: 1px solid var(--border-subtle);
   position: relative;
   border-radius: 8px;
+  cursor: default; /* whole card is not a click target */
   transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
+/* No card-level hover tint — only the num circle is interactive */
 .step:hover, .step-item:hover {
-  background: rgba(79, 109, 245, 0.04);
+  background: transparent;
 }
 
 .steps-list .step:last-child,
@@ -411,7 +413,45 @@ p {
   flex-shrink: 0;
   position: relative;
   box-shadow: 0 2px 6px rgba(79, 109, 245, 0.25);
-  transition: background 0.18s ease, box-shadow 0.18s ease;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease;
+}
+
+/* Hover: brief scale + stronger glow to signal it's the click target */
+.step-num:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 10px rgba(79, 109, 245, 0.45);
+}
+
+/* On hover show a faint checkmark ghost instead of the number */
+.step-num::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,7 5.5,10.5 12,3.5'/%3E%3C/svg%3E") center / 14px no-repeat;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.step-num:hover::after {
+  opacity: 0.55;
+}
+
+/* Completed: hover shows a faint X to hint it can be un-marked */
+.step.completed .step-num:hover,
+.step-item.completed .step-num:hover {
+  background: #e05252;
+  box-shadow: 0 2px 10px rgba(224, 82, 82, 0.4);
+}
+.step.completed .step-num::after,
+.step-item.completed .step-num::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round'%3E%3Cline x1='2' y1='2' x2='10' y2='10'/%3E%3Cline x1='10' y1='2' x2='2' y2='10'/%3E%3C/svg%3E");
+  background-size: 12px;
+}
+.step.completed .step-num:hover::after,
+.step-item.completed .step-num:hover::after {
+  opacity: 0.75;
 }
 
 .step-body {
